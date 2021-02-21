@@ -31,6 +31,7 @@ func (tester Tester) getExecutable() *Executable {
 	return newVerboseExecutable(tester.context.executablePath, getLogger(true, "[your_program] ").Plainln)
 }
 
+// PrintDebugContext is to be run as early as possible after creating a Tester
 func (tester Tester) PrintDebugContext() {
 	if !tester.context.isDebug {
 		return
@@ -40,16 +41,20 @@ func (tester Tester) PrintDebugContext() {
 	fmt.Println("")
 }
 
+// RunAntiCheatStages runs any anti-cheat stages specified in the TesterDefinition. Only critical logs are emitted. If
+// the stages pass, the user won't see any visible output.
 func (tester Tester) RunAntiCheatStages() bool {
 	stageRunner := tester.antiCheatStageRunner
 	return stageRunner.Run(false, tester.getQuietExecutable())
 }
 
+// RunStages runs all the stages upto the current stage the user is attempting. Returns true if all stages pass.
 func (tester Tester) RunStages() bool {
 	stageRunner := tester.stageRunner.Truncated(tester.context.currentStageSlug)
 	return stageRunner.Run(tester.context.isDebug, tester.getExecutable())
 }
 
+// PrintSuccessMessage is to be executed after RunStages and RunAntiCheatStages
 func (tester Tester) PrintSuccessMessage() {
 	fmt.Println("")
 	fmt.Println("All tests ran successfully. Congrats!")

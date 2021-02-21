@@ -15,7 +15,7 @@ type testerContext struct {
 	currentStageSlug string
 }
 
-type YAMLConfig struct {
+type yamlConfig struct {
 	Debug bool `yaml:"debug"`
 }
 
@@ -53,16 +53,16 @@ func getTesterContext(env map[string]string, executableFileName string) (testerC
 	}, nil
 }
 
-func readFromYAML(configPath string) (YAMLConfig, error) {
-	c := &YAMLConfig{}
+func readFromYAML(configPath string) (yamlConfig, error) {
+	c := &yamlConfig{}
 
 	fileContents, err := ioutil.ReadFile(configPath)
 	if err != nil {
-		return YAMLConfig{}, err
+		return yamlConfig{}, err
 	}
 
 	if err := yaml.Unmarshal(fileContents, c); err != nil {
-		return YAMLConfig{}, err
+		return yamlConfig{}, err
 	}
 
 	return *c, nil

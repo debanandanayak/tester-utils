@@ -9,9 +9,11 @@ import (
 )
 
 type TesterDefinition struct {
+	// Example: spawn_redis_server.sh
 	ExecutableFileName string
-	Stages             []Stage
-	AntiCheatStages    []Stage
+
+	Stages          []Stage
+	AntiCheatStages []Stage
 }
 
 type stageYAML struct {
