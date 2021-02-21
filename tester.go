@@ -3,8 +3,8 @@ package tester_utils
 import "fmt"
 
 type Tester struct {
-	AntiCheatStageRunner StageRunner
-	StageRunner          StageRunner
+	AntiCheatStageRunner stageRunner
+	StageRunner          stageRunner
 	context              testerContext
 }
 
@@ -18,8 +18,8 @@ func NewTester(env map[string]string, definition TesterDefinition) (Tester, erro
 
 	return Tester{
 		context:              context,
-		StageRunner:          NewStageRunner(definition.Stages),
-		AntiCheatStageRunner: NewQuietStageRunner(definition.AntiCheatStages),
+		StageRunner:          newStageRunner(definition.Stages),
+		AntiCheatStageRunner: newQuietStageRunner(definition.AntiCheatStages),
 	}, nil
 }
 

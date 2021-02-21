@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// StageRunner is used to run multiple stages
-type StageRunner struct {
+// stageRunner is used to run multiple stages
+type stageRunner struct {
 	isQuiet bool // Used for anti-cheat tests, where we only want Critical logs to be emitted
 	stages  []Stage
 }
@@ -22,15 +22,15 @@ type Stage struct {
 	TestFunc func(stageHarness StageHarness) error
 }
 
-func NewStageRunner(stages []Stage) StageRunner {
-	return StageRunner{stages: stages}
+func newStageRunner(stages []Stage) stageRunner {
+	return stageRunner{stages: stages}
 }
 
-func NewQuietStageRunner(stages []Stage) StageRunner {
-	return StageRunner{isQuiet: true, stages: stages}
+func newQuietStageRunner(stages []Stage) stageRunner {
+	return stageRunner{isQuiet: true, stages: stages}
 }
 
-func (r StageRunner) getLoggerForStage(isDebug bool, stageNumber int) *Logger {
+func (r stageRunner) getLoggerForStage(isDebug bool, stageNumber int) *Logger {
 	if r.isQuiet {
 		return getQuietLogger("")
 	} else {
@@ -38,8 +38,8 @@ func (r StageRunner) getLoggerForStage(isDebug bool, stageNumber int) *Logger {
 	}
 }
 
-// Run runs all tests in a StageRunner
-func (r StageRunner) Run(isDebug bool, executable *Executable) bool {
+// Run runs all tests in a stageRunner
+func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
 	for index, stage := range r.stages {
 		stageNumber := index + 1
 
@@ -77,12 +77,12 @@ func (r StageRunner) Run(isDebug bool, executable *Executable) bool {
 }
 
 // Truncated returns a stageRunner with fewer stages
-func (r StageRunner) Truncated(stageSlug string) StageRunner {
+func (r stageRunner) Truncated(stageSlug string) stageRunner {
 	newStages := make([]Stage, 0)
 	for _, stage := range r.stages {
 		newStages = append(newStages, stage)
 		if stage.Slug == stageSlug {
-			return StageRunner{stages: newStages}
+			return stageRunner{stages: newStages}
 		}
 	}
 
@@ -90,8 +90,8 @@ func (r StageRunner) Truncated(stageSlug string) StageRunner {
 }
 
 // Randomized returns a stage runner that has stages randomized
-func (r StageRunner) Randomized() StageRunner {
-	return StageRunner{
+func (r stageRunner) Randomized() stageRunner {
+	return stageRunner{
 		stages: shuffleStages(r.stages),
 	}
 }
