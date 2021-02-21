@@ -2,8 +2,8 @@ package tester_utils
 
 import (
 	"io/ioutil"
-	"testing"
 
+	"github.com/mitchellh/go-testing-interface"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
@@ -23,8 +23,8 @@ type CourseYAML struct {
 }
 
 // TestAgainstYaml tests whether the stage slugs in TesterDefintion match those in the course YAML at yamlPath.
-func (testerDefinition TesterDefinition) TestAgainstYAML(t *testing.T, yamlPath string) {
-	bytes, err := ioutil.ReadFile("test_helpers/course_definition.yml")
+func (testerDefinition TesterDefinition) TestAgainstYAML(t testing.T, yamlPath string) {
+	bytes, err := ioutil.ReadFile(yamlPath)
 	if err != nil {
 		t.Fatal(err)
 	}

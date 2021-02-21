@@ -5,12 +5,12 @@ import "fmt"
 type Tester struct {
 	AntiCheatStageRunner StageRunner
 	StageRunner          StageRunner
-	context              TesterContext
+	context              testerContext
 }
 
 // NewTester creates a Tester based on the TesterDefinition provided
 func NewTester(env map[string]string, definition TesterDefinition) (Tester, error) {
-	context, err := GetTesterContext(env, definition.ExecutableFileName)
+	context, err := getTesterContext(env, definition.ExecutableFileName)
 	if err != nil {
 		fmt.Printf("%s", err)
 		return Tester{}, err
