@@ -14,6 +14,8 @@ type StageRunner struct {
 }
 
 // Stage represents a stage in a challenge.
+//
+// The Slug in a Stage should match that in the course's YAML definition.
 type Stage struct {
 	Slug     string
 	Title    string

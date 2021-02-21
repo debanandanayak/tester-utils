@@ -24,11 +24,11 @@ func NewTester(env map[string]string, definition TesterDefinition) (Tester, erro
 }
 
 func (tester Tester) getQuietExecutable() *Executable {
-	return NewExecutable(tester.context.executablePath)
+	return newExecutable(tester.context.executablePath)
 }
 
 func (tester Tester) getExecutable() *Executable {
-	return NewVerboseExecutable(tester.context.executablePath, getLogger(true, "[your_program] ").Plainln)
+	return newVerboseExecutable(tester.context.executablePath, getLogger(true, "[your_program] ").Plainln)
 }
 
 func (tester Tester) PrintDebugContext() {
