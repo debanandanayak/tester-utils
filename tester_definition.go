@@ -14,12 +14,12 @@ type TesterDefinition struct {
 	AntiCheatStages    []Stage
 }
 
-type StageYAML struct {
+type stageYAML struct {
 	Slug string `yaml:"slug"`
 }
 
-type CourseYAML struct {
-	Stages []StageYAML `yaml:"stages"`
+type courseYAML struct {
+	Stages []stageYAML `yaml:"stages"`
 }
 
 // TestAgainstYaml tests whether the stage slugs in TesterDefintion match those in the course YAML at yamlPath.
@@ -29,7 +29,7 @@ func (testerDefinition TesterDefinition) TestAgainstYAML(t testing.T, yamlPath s
 		t.Fatal(err)
 	}
 
-	c := CourseYAML{}
+	c := courseYAML{}
 	if err := yaml.Unmarshal(bytes, &c); err != nil {
 		t.Fatal(err)
 	}
