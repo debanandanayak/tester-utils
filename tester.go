@@ -3,8 +3,8 @@ package tester_utils
 import "fmt"
 
 type Tester struct {
-	AntiCheatStageRunner stageRunner
-	StageRunner          stageRunner
+	antiCheatStageRunner stageRunner
+	stageRunner          stageRunner
 	context              testerContext
 }
 
@@ -18,8 +18,8 @@ func NewTester(env map[string]string, definition TesterDefinition) (Tester, erro
 
 	return Tester{
 		context:              context,
-		StageRunner:          newStageRunner(definition.Stages),
-		AntiCheatStageRunner: newQuietStageRunner(definition.AntiCheatStages),
+		stageRunner:          newStageRunner(definition.Stages),
+		antiCheatStageRunner: newQuietStageRunner(definition.AntiCheatStages),
 	}, nil
 }
 
@@ -41,12 +41,12 @@ func (tester Tester) PrintDebugContext() {
 }
 
 func (tester Tester) RunAntiCheatStages() bool {
-	stageRunner := tester.AntiCheatStageRunner
+	stageRunner := tester.antiCheatStageRunner
 	return stageRunner.Run(false, tester.getQuietExecutable())
 }
 
 func (tester Tester) RunStages() bool {
-	stageRunner := tester.StageRunner.Truncated(tester.context.currentStageSlug)
+	stageRunner := tester.stageRunner.Truncated(tester.context.currentStageSlug)
 	return stageRunner.Run(tester.context.isDebug, tester.getExecutable())
 }
 
