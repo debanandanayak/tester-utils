@@ -18,7 +18,7 @@ type Executable struct {
 	timeoutInSecs int
 	loggerFunc    func(string)
 
-	// Hmm, no way around exposing this?
+	// WorkingDir can be set before calling Start or Run to customize the working directory of the executable.
 	WorkingDir string
 
 	// These are set & removed together
@@ -62,13 +62,13 @@ func nullLogger(msg string) {
 	return
 }
 
-// NewExecutable returns an Executable struct
-func NewExecutable(path string) *Executable {
+// newExecutable returns an Executable
+func newExecutable(path string) *Executable {
 	return &Executable{path: path, timeoutInSecs: 10, loggerFunc: nullLogger}
 }
 
-// NewVerboseExecutable returns an Executable struct with a logger configured
-func NewVerboseExecutable(path string, loggerFunc func(string)) *Executable {
+// newVerboseExecutable returns an Executable struct with a logger configured
+func newVerboseExecutable(path string, loggerFunc func(string)) *Executable {
 	return &Executable{path: path, timeoutInSecs: 10, loggerFunc: loggerFunc}
 }
 

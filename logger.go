@@ -90,6 +90,7 @@ func (l *Logger) Infoln(msg string) {
 	l.logger.Println(msg)
 }
 
+// Criticalf is to be used only in anti-cheat stages
 func (l *Logger) Criticalf(fstring string, args ...interface{}) {
 	if !l.isQuiet {
 		panic("Critical is only for quiet loggers")
@@ -98,6 +99,7 @@ func (l *Logger) Criticalf(fstring string, args ...interface{}) {
 	l.Criticalln(msg)
 }
 
+// Criticalln is to be used only in anti-cheat stages
 func (l *Logger) Criticalln(msg string) {
 	if !l.isQuiet {
 		panic("Critical is only for quiet loggers")

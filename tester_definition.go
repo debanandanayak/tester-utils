@@ -2,34 +2,36 @@ package tester_utils
 
 import (
 	"io/ioutil"
-	"testing"
 
+	"github.com/mitchellh/go-testing-interface"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
 
 type TesterDefinition struct {
+	// Example: spawn_redis_server.sh
 	ExecutableFileName string
-	Stages             []Stage
-	AntiCheatStages    []Stage
+
+	Stages          []Stage
+	AntiCheatStages []Stage
 }
 
-type StageYAML struct {
+type stageYAML struct {
 	Slug string `yaml:"slug"`
 }
 
-type CourseYAML struct {
-	Stages []StageYAML `yaml:"stages"`
+type courseYAML struct {
+	Stages []stageYAML `yaml:"stages"`
 }
 
 // TestAgainstYaml tests whether the stage slugs in TesterDefintion match those in the course YAML at yamlPath.
-func (testerDefinition TesterDefinition) TestAgainstYAML(t *testing.T, yamlPath string) {
-	bytes, err := ioutil.ReadFile("test_helpers/course_definition.yml")
+func (testerDefinition TesterDefinition) TestAgainstYAML(t testing.T, yamlPath string) {
+	bytes, err := ioutil.ReadFile(yamlPath)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	c := CourseYAML{}
+	c := courseYAML{}
 	if err := yaml.Unmarshal(bytes, &c); err != nil {
 		t.Fatal(err)
 	}
