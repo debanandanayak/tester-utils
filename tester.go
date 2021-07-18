@@ -59,5 +59,8 @@ func (tester Tester) PrintSuccessMessage() {
 	fmt.Println("")
 	fmt.Println("All tests ran successfully. Congrats!")
 	fmt.Println("")
-	// TODO: Print next stage!
+
+	fmt.Println("")
+	fmt.Printf("View the next stage instructions at: %s", tester.context.coursePageUrl)
+	fmt.Println("")
 }

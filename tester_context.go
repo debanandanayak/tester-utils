@@ -13,6 +13,7 @@ type testerContext struct {
 	executablePath   string
 	isDebug          bool
 	currentStageSlug string
+	coursePageUrl    string
 }
 
 type yamlConfig struct {
@@ -36,6 +37,11 @@ func getTesterContext(env map[string]string, executableFileName string) (testerC
 		return testerContext{}, fmt.Errorf("CODECRAFTERS_CURRENT_STAGE_SLUG env var not found")
 	}
 
+	coursePageUrl, ok := env["CODECRAFTERS_COURSE_PAGE_URL"]
+	if !ok {
+		return testerContext{}, fmt.Errorf("CODECRAFTERS_COURSE_PAGE_URL env var not found")
+	}
+
 	configPath := path.Join(submissionDir, "codecrafters.yml")
 	executablePath := path.Join(submissionDir, executableFileName)
 
@@ -50,6 +56,7 @@ func getTesterContext(env map[string]string, executableFileName string) (testerC
 		executablePath:   executablePath,
 		isDebug:          yamlConfig.Debug,
 		currentStageSlug: currentStageSlug,
+		coursePageUrl:    coursePageUrl,
 	}, nil
 }
 
