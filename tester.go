@@ -62,7 +62,6 @@ func (tester Tester) IsLastStage() bool {
 func (tester Tester) PrintSuccessMessage() {
 	fmt.Println("")
 	fmt.Println("All tests ran successfully. Congrats!")
-	fmt.Println("")
 
 	if tester.IsLastStage() {
 		fmt.Println("")
