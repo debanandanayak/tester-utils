@@ -4,3 +4,6 @@ next_patch_number := $(shell echo $$(($(current_patch_number)+1)))
 release:
 	git tag v0.1.$(next_patch_number)
 	git push origin master v0.1.$(next_patch_number)
+
+test:
+	go test -v ./...
