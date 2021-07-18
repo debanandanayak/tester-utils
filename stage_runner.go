@@ -17,9 +17,10 @@ type stageRunner struct {
 //
 // The Slug in a Stage should match that in the course's YAML definition.
 type Stage struct {
-	Slug     string
-	Title    string
-	TestFunc func(stageHarness StageHarness) error
+	Slug                    string
+	Title                   string
+	TestFunc                func(stageHarness StageHarness) error
+	ShouldRunPreviousStages bool
 }
 
 func newStageRunner(stages []Stage) stageRunner {
@@ -82,6 +83,29 @@ func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
 	}
 
 	return true
+}
+
+func (r stageRunner) StageBySlug(stageSlug string) Stage {
+	for _, stage := range r.stages {
+		if stage.Slug == stageSlug {
+			return stage
+		}
+	}
+
+	panic("Didn't find stage by slug " + stageSlug)
+}
+
+// ForStage returns a stageRunner with fewer stages
+func (r stageRunner) ForStage(stageSlug string) stageRunner {
+	currentStage := r.StageBySlug(stageSlug)
+
+	if !currentStage.ShouldRunPreviousStages {
+		return stageRunner{
+			stages: []Stage{currentStage},
+		}
+	}
+
+	return r.Truncated(stageSlug)
 }
 
 // Truncated returns a stageRunner with fewer stages

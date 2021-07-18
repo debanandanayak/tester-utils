@@ -50,13 +50,7 @@ func (tester Tester) RunAntiCheatStages() bool {
 
 // RunStages runs all the stages upto the current stage the user is attempting. Returns true if all stages pass.
 func (tester Tester) RunStages() bool {
-	stageRunner := tester.stageRunner.Truncated(tester.context.currentStageSlug)
-	return stageRunner.Run(tester.context.isDebug, tester.getExecutable())
-}
-
-// RunStages runs all the stages upto the current stage the user is attempting, but in a Random fashion. Returns true if all stages pass.
-func (tester Tester) RunStagesRandomized() bool {
-	stageRunner := tester.stageRunner.Truncated(tester.context.currentStageSlug).Randomized()
+	stageRunner := tester.stageRunner.ForStage(tester.context.currentStageSlug)
 	return stageRunner.Run(tester.context.isDebug, tester.getExecutable())
 }
 
