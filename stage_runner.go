@@ -38,6 +38,10 @@ func (r stageRunner) getLoggerForStage(isDebug bool, stageNumber int) *Logger {
 	}
 }
 
+func (r stageRunner) FirstStageSlug() string {
+	return r.stages[0].Slug
+}
+
 func (r stageRunner) LastStageSlug() string {
 	return r.stages[len(r.stages)-1].Slug
 }

@@ -54,6 +54,16 @@ func (tester Tester) RunStages() bool {
 	return stageRunner.Run(tester.context.isDebug, tester.getExecutable())
 }
 
+// RunStages runs all the stages upto the current stage the user is attempting, but in a Random fashion. Returns true if all stages pass.
+func (tester Tester) RunStagesRandomized() bool {
+	stageRunner := tester.stageRunner.Truncated(tester.context.currentStageSlug).Randomized()
+	return stageRunner.Run(tester.context.isDebug, tester.getExecutable())
+}
+
+func (tester Tester) IsFirstStage() bool {
+	return tester.stageRunner.FirstStageSlug() == tester.context.currentStageSlug
+}
+
 func (tester Tester) IsLastStage() bool {
 	return tester.stageRunner.LastStageSlug() == tester.context.currentStageSlug
 }
