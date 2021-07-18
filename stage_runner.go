@@ -38,6 +38,10 @@ func (r stageRunner) getLoggerForStage(isDebug bool, stageNumber int) *Logger {
 	}
 }
 
+func (r stageRunner) LastStageSlug() string {
+	return r.stages[len(r.stages)-1].Slug
+}
+
 // Run runs all tests in a stageRunner
 func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
 	for index, stage := range r.stages {

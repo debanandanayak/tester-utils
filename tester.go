@@ -54,13 +54,23 @@ func (tester Tester) RunStages() bool {
 	return stageRunner.Run(tester.context.isDebug, tester.getExecutable())
 }
 
+func (tester Tester) IsLastStage() bool {
+	return tester.stageRunner.LastStageSlug() == tester.context.currentStageSlug
+}
+
 // PrintSuccessMessage is to be executed after RunStages and RunAntiCheatStages
 func (tester Tester) PrintSuccessMessage() {
 	fmt.Println("")
 	fmt.Println("All tests ran successfully. Congrats!")
 	fmt.Println("")
 
-	fmt.Println("")
-	fmt.Printf("View the next stage instructions at: %s", tester.context.coursePageUrl)
-	fmt.Println("")
+	if tester.IsLastStage() {
+		fmt.Println("")
+		fmt.Printf("Want to try another language or approach? Visit the course page: %s", tester.context.coursePageUrl)
+		fmt.Println("")
+	} else {
+		fmt.Println("")
+		fmt.Printf("View instructions for the next stage at: %s", tester.context.coursePageUrl)
+		fmt.Println("")
+	}
 }
