@@ -65,11 +65,11 @@ func (tester Tester) PrintSuccessMessage() {
 
 	if tester.IsLastStage() {
 		fmt.Println("")
-		fmt.Printf("Want to try another language or approach? Visit the course page: %s", tester.context.coursePageUrl)
+		fmt.Printf("Want to try another language or approach? Visit the course page: %s\n", tester.context.coursePageUrl)
 		fmt.Println("")
 	} else {
 		fmt.Println("")
-		fmt.Printf("View instructions for the next stage at: %s", tester.context.coursePageUrl)
+		fmt.Printf("View instructions for the next stage at: %s\n", tester.context.coursePageUrl)
 		fmt.Println("")
 	}
 }
