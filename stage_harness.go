@@ -32,6 +32,7 @@ type StageHarness struct {
 func (s StageHarness) RegisterTeardownFunc(teardownFunc func()) {
 	fmt.Println("registering teardown func")
 	s.teardownFuncs = append(s.teardownFuncs, teardownFunc)
+	fmt.Println(len(s.teardownFuncs))
 }
 
 func (s StageHarness) RunTeardownFuncs() {
