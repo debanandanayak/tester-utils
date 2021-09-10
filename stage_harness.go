@@ -22,4 +22,17 @@ type StageHarness struct {
 
 	// Executable is the program to be tested.
 	Executable *Executable
+
+	// teardownFuncs are run once the error has been reported to the user
+	teardownFuncs []func()
+}
+
+func (s StageHarness) RegisterTeardownFunc(teardownFunc func()) {
+	s.teardownFuncs = append(s.teardownFuncs, teardownFunc)
+}
+
+func (s StageHarness) RunTeardownFuncs() {
+	for _, teardownFunc := range s.teardownFuncs {
+		teardownFunc()
+	}
 }

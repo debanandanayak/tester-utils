@@ -75,11 +75,16 @@ func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
 		}
 
 		if err != nil {
-			reportTestError(isDebug, logger)
-			return false
+			reportTestError(err, isDebug, logger)
+		} else {
+			logger.Successf("Test passed.")
 		}
 
-		logger.Successf("Test passed.")
+		stageHarness.RunTeardownFuncs()
+
+		if err != nil {
+			return false
+		}
 	}
 
 	return true
@@ -146,7 +151,9 @@ func shuffleStages(stages []Stage) []Stage {
 	return ret
 }
 
-func reportTestError(isDebug bool, logger *Logger) {
+func reportTestError(err error, isDebug bool, logger *Logger) {
+	logger.Errorf("%s", err)
+
 	if isDebug {
 		logger.Errorf("Test failed")
 	} else {
