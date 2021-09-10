@@ -29,7 +29,7 @@ type StageHarness struct {
 	teardownFuncs []func()
 }
 
-func (s StageHarness) RegisterTeardownFunc(teardownFunc func()) {
+func (s *StageHarness) RegisterTeardownFunc(teardownFunc func()) {
 	fmt.Println("registering teardown func")
 	s.teardownFuncs = append(s.teardownFuncs, teardownFunc)
 	fmt.Println(len(s.teardownFuncs))

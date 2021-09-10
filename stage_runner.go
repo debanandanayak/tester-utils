@@ -19,7 +19,7 @@ type stageRunner struct {
 type Stage struct {
 	Slug                    string
 	Title                   string
-	TestFunc                func(stageHarness StageHarness) error
+	TestFunc                func(stageHarness *StageHarness) error
 	ShouldRunPreviousStages bool
 }
 
@@ -62,7 +62,7 @@ func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
 
 		stageResultChannel := make(chan error, 1)
 		go func() {
-			err := stage.TestFunc(stageHarness)
+			err := stage.TestFunc(&stageHarness)
 			stageResultChannel <- err
 		}()
 
