@@ -75,7 +75,7 @@ func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
 		}
 
 		if err != nil {
-			reportTestError(err, isDebug, logger)
+			reportTestError(isDebug, logger)
 			return false
 		}
 
@@ -146,8 +146,7 @@ func shuffleStages(stages []Stage) []Stage {
 	return ret
 }
 
-func reportTestError(err error, isDebug bool, logger *Logger) {
-	logger.Errorf("%s", err)
+func reportTestError(isDebug bool, logger *Logger) {
 	if isDebug {
 		logger.Errorf("Test failed")
 	} else {
