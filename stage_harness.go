@@ -1,7 +1,5 @@
 package tester_utils
 
-import "fmt"
-
 // StageHarness is passed to your Stage's TestFunc.
 //
 // If the program is a long-lived program that must be alive during the duration of the test (like a Redis server),
@@ -30,17 +28,11 @@ type StageHarness struct {
 }
 
 func (s *StageHarness) RegisterTeardownFunc(teardownFunc func()) {
-	fmt.Println("registering teardown func")
 	s.teardownFuncs = append(s.teardownFuncs, teardownFunc)
-	fmt.Println(len(s.teardownFuncs))
 }
 
 func (s StageHarness) RunTeardownFuncs() {
-	fmt.Println("running teardown funcs...")
-	fmt.Println(len(s.teardownFuncs))
 	for _, teardownFunc := range s.teardownFuncs {
-		fmt.Println("running a teardown func")
 		teardownFunc()
-		fmt.Println("ran a teardown func")
 	}
 }
