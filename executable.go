@@ -62,13 +62,13 @@ func nullLogger(msg string) {
 	return
 }
 
-// newExecutable returns an Executable
-func newExecutable(path string) *Executable {
+// NewExecutable returns an Executable
+func NewExecutable(path string) *Executable {
 	return &Executable{path: path, timeoutInSecs: 10, loggerFunc: nullLogger}
 }
 
-// newVerboseExecutable returns an Executable struct with a logger configured
-func newVerboseExecutable(path string, loggerFunc func(string)) *Executable {
+// NewVerboseExecutable returns an Executable struct with a logger configured
+func NewVerboseExecutable(path string, loggerFunc func(string)) *Executable {
 	return &Executable{path: path, timeoutInSecs: 10, loggerFunc: loggerFunc}
 }
 

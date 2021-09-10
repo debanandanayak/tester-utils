@@ -24,11 +24,11 @@ func NewTester(env map[string]string, definition TesterDefinition) (Tester, erro
 }
 
 func (tester Tester) getQuietExecutable() *Executable {
-	return newExecutable(tester.context.executablePath)
+	return NewExecutable(tester.context.executablePath)
 }
 
 func (tester Tester) getExecutable() *Executable {
-	return newVerboseExecutable(tester.context.executablePath, getLogger(true, "[your_program] ").Plainln)
+	return NewVerboseExecutable(tester.context.executablePath, getLogger(true, "[your_program] ").Plainln)
 }
 
 // PrintDebugContext is to be run as early as possible after creating a Tester
