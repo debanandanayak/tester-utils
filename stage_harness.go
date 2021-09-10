@@ -5,14 +5,14 @@ package tester_utils
 // If the program is a long-lived program that must be alive during the duration of the test (like a Redis server),
 // do something like this at the start of your test function:
 //
-//  if err := stageHarness.Executable.Run(); err != nil {
+//  if err := stageHarness.Executable.Start(); err != nil {
 //     return err
 //  }
-//  defer stageHarness.Executable.Kill()
+//  stageHarness.RegisterTeardownFunc(func() { stageHarness.Executable.Kill() })
 //
 // If the program is a script that must be executed and then checked for output (like a Git command), use it like this:
 //
-//  result, err := executable.Run("cat-file", "-p", "sha")
+//  result, err := stageHarness.Executable.Run("cat-file", "-p", "sha")
 //  if err != nil {
 //      return err
 //   }
