@@ -182,6 +182,10 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 // Kill terminates the program
 func (e *Executable) Kill() error {
 	syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM)
+
+	time.Sleep(200 * time.Millisecond)
+	syscall.Kill(e.cmd.Process.Pid, syscall.SIGINT) // Some programs just don't respond to SIGINT well
+
 	_, err := e.Wait()
 	return err
 }
