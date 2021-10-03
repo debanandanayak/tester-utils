@@ -182,7 +182,8 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 
 // Kill terminates the program
 func (e *Executable) Kill() error {
-	syscall.Kill(-e.cmd.Process.Pid, syscall.SIGTERM)
+	syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM) // Don't know if this is required
+	syscall.Kill(-e.cmd.Process.Pid, syscall.SIGTERM) // Kill the whole process group
 
 	_, err := e.Wait()
 	return err
