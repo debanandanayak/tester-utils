@@ -129,7 +129,7 @@ func (e *Executable) setupIORelay(source io.Reader, destination1 io.Writer, dest
 		}
 
 		if bytesWritten == 1024*1024 {
-			e.loggerFunc("\n Warning: Logs exceeded allowed limit, output might be truncated.\n")
+			e.loggerFunc("Warning: Logs exceeded allowed limit, output might be truncated.\n")
 		}
 
 		e.readDone <- true
