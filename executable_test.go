@@ -44,6 +44,15 @@ func TestOutputCapture(t *testing.T) {
 	assert.Equal(t, "hey\n", string(result.Stderr))
 }
 
+func TestLargeOutputCapture(t *testing.T) {
+	e := NewExecutable("./test_helpers/executable_test/large_echo.sh")
+	result, err := e.Run("hey")
+
+	assert.NoError(t, err)
+	assert.Equal(t, 1024*1024, len(result.Stdout))
+	assert.Equal(t, "blah\n", string(result.Stderr))
+}
+
 func TestExitCode(t *testing.T) {
 	e := NewExecutable("./test_helpers/executable_test/exit_with.sh")
 

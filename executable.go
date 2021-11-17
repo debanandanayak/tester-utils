@@ -3,6 +3,7 @@ package tester_utils
 import (
 	"bytes"
 	"errors"
+	"io/ioutil"
 	"time"
 
 	"io"
@@ -122,11 +123,17 @@ func (e *Executable) Start(args ...string) error {
 func (e *Executable) setupIORelay(source io.Reader, destination1 io.Writer, destination2 io.Writer) {
 	go func() {
 		combinedDestination := io.MultiWriter(destination1, destination2)
-		_, err := io.Copy(combinedDestination, io.LimitReader(source, 1024*1024)) // 1MB
+		bytesWritten, err := io.Copy(combinedDestination, io.LimitReader(source, 1024*1024)) // 1MB
 		if err != nil {
 			panic(err)
 		}
+
+		if bytesWritten == 1024*1024 {
+			e.loggerFunc("\n Warning: Logs exceeded allowed limit, output might be truncated.\n")
+		}
+
 		e.readDone <- true
+		io.Copy(ioutil.Discard, source) // Let's drain the pipe in case any content is leftover
 	}()
 }
 
