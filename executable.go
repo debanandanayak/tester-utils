@@ -119,10 +119,10 @@ func (e *Executable) Start(args ...string) error {
 	return nil
 }
 
-func (e *Executable) setupIORelay(childReader io.Reader, buffer io.Writer, writer io.Writer) {
+func (e *Executable) setupIORelay(source io.Reader, destination1 io.Writer, destination2 io.Writer) {
 	go func() {
-		writer := io.MultiWriter(writer, buffer)
-		_, err := io.Copy(writer, childReader)
+		combinedDestination := io.MultiWriter(destination1, destination2)
+		_, err := io.Copy(combinedDestination, io.LimitReader(source, 1024*1024)) // 1MB
 		if err != nil {
 			panic(err)
 		}
