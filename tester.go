@@ -12,7 +12,7 @@ type Tester struct {
 func NewTester(env map[string]string, definition TesterDefinition) (Tester, error) {
 	context, err := getTesterContext(env, definition.ExecutableFileName)
 	if err != nil {
-		fmt.Printf("%s", err)
+		fmt.Println(err.Error())
 		return Tester{}, err
 	}
 
