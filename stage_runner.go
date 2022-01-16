@@ -23,6 +23,14 @@ type Stage struct {
 	ShouldRunPreviousStages bool
 }
 
+func (s Stage) CustomOrDefaultTimeout() time.Duration {
+	if (s.Timeout == 0) || (s.Timeout == time.Duration(0)) {
+		return 10 * time.Second
+	} else {
+		return s.Timeout
+	}
+}
+
 func newStageRunner(stages []Stage) stageRunner {
 	return stageRunner{stages: stages}
 }
@@ -70,8 +78,8 @@ func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
 		select {
 		case stageErr := <-stageResultChannel:
 			err = stageErr
-		case <-time.After(stage.Timeout):
-			err = fmt.Errorf("timed out, test exceeded %d seconds", int64(stage.Timeout.Seconds()))
+		case <-time.After(stage.CustomOrDefaultTimeout()):
+			err = fmt.Errorf("timed out, test exceeded %d seconds", int64(stage.CustomOrDefaultTimeout().Seconds()))
 		}
 
 		if err != nil {
