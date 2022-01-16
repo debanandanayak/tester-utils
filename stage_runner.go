@@ -2,7 +2,6 @@ package tester_utils
 
 import (
 	"fmt"
-
 	"math/rand"
 	"time"
 )
@@ -20,6 +19,7 @@ type Stage struct {
 	Slug                    string
 	Title                   string
 	TestFunc                func(stageHarness *StageHarness) error
+	Timeout                 time.Duration
 	ShouldRunPreviousStages bool
 }
 
@@ -70,8 +70,8 @@ func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
 		select {
 		case stageErr := <-stageResultChannel:
 			err = stageErr
-		case <-time.After(10 * time.Second):
-			err = fmt.Errorf("timed out, test exceeded 10 seconds")
+		case <-time.After(stage.Timeout):
+			err = fmt.Errorf("timed out, test exceeded %d seconds", int64(stage.Timeout.Seconds()))
 		}
 
 		if err != nil {
