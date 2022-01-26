@@ -1,9 +1,9 @@
 package tester_utils
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
+	"time"
 )
 
 func TestStart(t *testing.T) {
@@ -96,4 +96,14 @@ func TestSuccessiveExecutions(t *testing.T) {
 
 	result, _ = e.Run("2")
 	assert.Equal(t, "2\n", string(result.Stdout))
+}
+
+func TestHasExited(t *testing.T) {
+	e := NewExecutable("./test_helpers/executable_test/sleep_for.sh")
+
+	e.Start("0.1")
+	assert.False(t, e.HasExited(), "Expected to not have exited")
+
+	time.Sleep(150 * time.Millisecond)
+	assert.True(t, e.HasExited(), "Expected to have exited")
 }

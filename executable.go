@@ -23,16 +23,17 @@ type Executable struct {
 	WorkingDir string
 
 	// These are set & removed together
-	cmd              *exec.Cmd
-	stdoutPipe       io.ReadCloser
-	stderrPipe       io.ReadCloser
-	stdoutBytes      []byte
-	stderrBytes      []byte
-	stdoutBuffer     *bytes.Buffer
-	stderrBuffer     *bytes.Buffer
-	stdoutLineWriter *linewriter.LineWriter
-	stderrLineWriter *linewriter.LineWriter
-	readDone         chan bool
+	atleastOneReadDone bool
+	cmd                *exec.Cmd
+	stdoutPipe         io.ReadCloser
+	stderrPipe         io.ReadCloser
+	stdoutBytes        []byte
+	stderrBytes        []byte
+	stdoutBuffer       *bytes.Buffer
+	stderrBuffer       *bytes.Buffer
+	stdoutLineWriter   *linewriter.LineWriter
+	stderrLineWriter   *linewriter.LineWriter
+	readDone           chan bool
 }
 
 // ExecutableResult holds the result of an executable run
@@ -77,6 +78,10 @@ func (e *Executable) isRunning() bool {
 	return e.cmd != nil
 }
 
+func (e *Executable) HasExited() bool {
+	return e.atleastOneReadDone == true
+}
+
 // Start starts the specified command but does not wait for it to complete.
 func (e *Executable) Start(args ...string) error {
 	var err error
@@ -90,6 +95,7 @@ func (e *Executable) Start(args ...string) error {
 	e.cmd.Dir = e.WorkingDir
 	e.cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	e.readDone = make(chan bool)
+	e.atleastOneReadDone = false
 
 	// Setup stdout capture
 	e.stdoutPipe, err = e.cmd.StdoutPipe()
@@ -132,6 +138,7 @@ func (e *Executable) setupIORelay(source io.Reader, destination1 io.Writer, dest
 			e.loggerFunc("Warning: Logs exceeded allowed limit, output might be truncated.\n")
 		}
 
+		e.atleastOneReadDone = true
 		e.readDone <- true
 		io.Copy(ioutil.Discard, source) // Let's drain the pipe in case any content is leftover
 	}()
@@ -152,6 +159,7 @@ func (e *Executable) Run(args ...string) (ExecutableResult, error) {
 // Wait waits for the program to finish and results the result
 func (e *Executable) Wait() (ExecutableResult, error) {
 	defer func() {
+		e.atleastOneReadDone = false
 		e.cmd = nil
 		e.stdoutPipe = nil
 		e.stderrPipe = nil
@@ -189,7 +197,7 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 
 // Kill terminates the program
 func (e *Executable) Kill() error {
-	syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM) // Don't know if this is required
+	syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM)  // Don't know if this is required
 	syscall.Kill(-e.cmd.Process.Pid, syscall.SIGTERM) // Kill the whole process group
 
 	_, err := e.Wait()
