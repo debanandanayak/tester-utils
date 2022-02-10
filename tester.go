@@ -18,10 +18,6 @@ func NewTester(env map[string]string, definition TesterDefinition) (Tester, erro
 
 	isForFirstStage := context.currentStageSlug == definition.Stages[0].Slug
 
-	fmt.Println(context.currentStageSlug)
-	fmt.Println(definition.Stages[0].Slug)
-	fmt.Println(isForFirstStage)
-
 	return Tester{
 		context:              context,
 		stageRunner:          newStageRunner(definition.Stages, isForFirstStage),
