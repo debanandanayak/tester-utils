@@ -118,7 +118,8 @@ func (r stageRunner) ForStage(stageSlug string) stageRunner {
 
 	if !currentStage.ShouldRunPreviousStages {
 		return stageRunner{
-			stages: []Stage{currentStage},
+			isForFirstStage: r.isForFirstStage,
+			stages:          []Stage{currentStage},
 		}
 	}
 
@@ -131,7 +132,7 @@ func (r stageRunner) Truncated(stageSlug string) stageRunner {
 	for _, stage := range r.stages {
 		newStages = append(newStages, stage)
 		if stage.Slug == stageSlug {
-			return stageRunner{stages: newStages}
+			return stageRunner{isForFirstStage: r.isForFirstStage, stages: newStages}
 		}
 	}
 
@@ -141,7 +142,8 @@ func (r stageRunner) Truncated(stageSlug string) stageRunner {
 // Randomized returns a stage runner that has stages randomized
 func (r stageRunner) Randomized() stageRunner {
 	return stageRunner{
-		stages: shuffleStages(r.stages),
+		isForFirstStage: r.isForFirstStage,
+		stages:          shuffleStages(r.stages),
 	}
 }
 
