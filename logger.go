@@ -16,15 +16,15 @@ func debugColorize(fstring string, args ...interface{}) string {
 }
 
 func infoColorize(fstring string, args ...interface{}) string {
-	return colorize(color.FgBlue, fstring, args...)
+	return colorize(color.FgHiBlue, fstring, args...)
 }
 
 func successColorize(fstring string, args ...interface{}) string {
-	return colorize(color.FgGreen, fstring, args...)
+	return colorize(color.FgHiGreen, fstring, args...)
 }
 
 func errorColorize(fstring string, args ...interface{}) string {
-	return colorize(color.FgRed, fstring, args...)
+	return colorize(color.FgHiRed, fstring, args...)
 }
 
 func yellowColorize(fstring string, args ...interface{}) string {
