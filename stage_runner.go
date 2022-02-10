@@ -8,8 +8,9 @@ import (
 
 // stageRunner is used to run multiple stages
 type stageRunner struct {
-	isQuiet bool // Used for anti-cheat tests, where we only want Critical logs to be emitted
-	stages  []Stage
+	isQuiet         bool // Used for anti-cheat tests, where we only want Critical logs to be emitted
+	isForFirstStage bool // We emit friendlier logs on test failures for the first stage
+	stages          []Stage
 }
 
 // Stage represents a stage in a challenge.
@@ -31,8 +32,11 @@ func (s Stage) CustomOrDefaultTimeout() time.Duration {
 	}
 }
 
-func newStageRunner(stages []Stage) stageRunner {
-	return stageRunner{stages: stages}
+func newStageRunner(stages []Stage, isForFirstStage bool) stageRunner {
+	return stageRunner{
+		isForFirstStage: isForFirstStage,
+		stages:          stages,
+	}
 }
 
 func newQuietStageRunner(stages []Stage) stageRunner {
@@ -83,7 +87,7 @@ func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
 		}
 
 		if err != nil {
-			reportTestError(err, isDebug, logger)
+			r.reportTestError(err, isDebug, logger)
 		} else {
 			logger.Successf("Test passed.")
 		}
@@ -159,10 +163,13 @@ func shuffleStages(stages []Stage) []Stage {
 	return ret
 }
 
-func reportTestError(err error, isDebug bool, logger *Logger) {
+func (r stageRunner) reportTestError(err error, isDebug bool, logger *Logger) {
 	logger.Errorf("%s", err)
 
-	if isDebug {
+	if r.isForFirstStage {
+		logger.Errorf("Test failed " +
+			"(see README.md for instructions on how to pass this stage)")
+	} else if isDebug {
 		logger.Errorf("Test failed")
 	} else {
 		logger.Errorf("Test failed " +

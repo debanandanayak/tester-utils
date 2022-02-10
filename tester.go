@@ -16,9 +16,11 @@ func NewTester(env map[string]string, definition TesterDefinition) (Tester, erro
 		return Tester{}, err
 	}
 
+	isForFirstStage := context.currentStageSlug == definition.Stages[0].Slug
+
 	return Tester{
 		context:              context,
-		stageRunner:          newStageRunner(definition.Stages),
+		stageRunner:          newStageRunner(definition.Stages, isForFirstStage),
 		antiCheatStageRunner: newQuietStageRunner(definition.AntiCheatStages),
 	}, nil
 }
