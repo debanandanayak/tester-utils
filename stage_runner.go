@@ -70,7 +70,7 @@ func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
 		}
 
 		logger := stageHarness.Logger
-		logger.Infof("Running tests for stage #%s: %s", stageNumber, stage.Title)
+		logger.Infof("Running tests for Stage #%s: %s", stageNumber, stage.Title)
 
 		stageResultChannel := make(chan error, 1)
 		go func() {
