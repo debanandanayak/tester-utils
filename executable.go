@@ -45,13 +45,11 @@ type ExecutableResult struct {
 
 type loggerWriter struct {
 	loggerFunc func(string)
-	buffer     []byte
 }
 
 func newLoggerWriter(loggerFunc func(string)) *loggerWriter {
 	return &loggerWriter{
 		loggerFunc: loggerFunc,
-		buffer:     make([]byte, 80),
 	}
 }
 
