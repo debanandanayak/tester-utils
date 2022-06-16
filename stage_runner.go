@@ -18,6 +18,7 @@ type stageRunner struct {
 // The Slug in a Stage should match that in the course's YAML definition.
 type Stage struct {
 	Slug                    string
+	Number                  int
 	Title                   string
 	TestFunc                func(stageHarness *StageHarness) error
 	Timeout                 time.Duration
@@ -43,11 +44,11 @@ func newQuietStageRunner(stages []Stage) stageRunner {
 	return stageRunner{isQuiet: true, stages: stages}
 }
 
-func (r stageRunner) getLoggerForStage(isDebug bool, stageNumber int) *Logger {
+func (r stageRunner) getLoggerForStage(isDebug bool, stage Stage) *Logger {
 	if r.isQuiet {
 		return getQuietLogger("")
 	} else {
-		return getLogger(isDebug, fmt.Sprintf("[stage-%d] ", stageNumber))
+		return getLogger(isDebug, fmt.Sprintf("[stage-%d] ", stage.Number))
 	}
 }
 
@@ -61,16 +62,14 @@ func (r stageRunner) LastStageSlug() string {
 
 // Run runs all tests in a stageRunner
 func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
-	for index, stage := range r.stages {
-		stageNumber := index + 1
-
+	for _, stage := range r.stages {
 		stageHarness := StageHarness{
-			Logger:     r.getLoggerForStage(isDebug, stageNumber),
+			Logger:     r.getLoggerForStage(isDebug, stage),
 			Executable: executable,
 		}
 
 		logger := stageHarness.Logger
-		logger.Infof("Running tests for Stage #%d: %s", stageNumber, stage.Title)
+		logger.Infof("Running tests for Stage #%d: %s", stage.Number, stage.Title)
 
 		stageResultChannel := make(chan error, 1)
 		go func() {
