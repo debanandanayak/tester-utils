@@ -16,8 +16,19 @@ type TesterDefinition struct {
 	AntiCheatStages []Stage
 }
 
+func (t TesterDefinition) StageBySlug(slug string) Stage {
+	for _, stage := range t.Stages {
+		if stage.Slug == slug {
+			return stage
+		}
+	}
+
+	return Stage{}
+}
+
 type stageYAML struct {
-	Slug string `yaml:"slug"`
+	Slug  string `yaml:"slug"`
+	Title string `yaml:"title"`
 }
 
 type courseYAML struct {
@@ -36,15 +47,21 @@ func (testerDefinition TesterDefinition) TestAgainstYAML(t testing.T, yamlPath s
 		t.Fatal(err)
 	}
 
-	stagesInYaml := []string{}
+	slugsInYaml := []string{}
 	for _, stage := range c.Stages {
-		stagesInYaml = append(stagesInYaml, stage.Slug)
+		slugsInYaml = append(slugsInYaml, stage.Slug)
 	}
 
-	stagesInDefinition := []string{}
+	slugsInDefinition := []string{}
 	for _, stage := range testerDefinition.Stages {
-		stagesInDefinition = append(stagesInDefinition, stage.Slug)
+		slugsInDefinition = append(slugsInDefinition, stage.Slug)
 	}
 
-	assert.Equal(t, stagesInYaml, stagesInDefinition)
+	assert.Equal(t, slugsInYaml, slugsInDefinition)
+
+	for _, stage := range c.Stages {
+		stageInDefinition := testerDefinition.StageBySlug(stage.Slug)
+
+		assert.Equal(t, stageInDefinition.Title, stage.Title)
+	}
 }
