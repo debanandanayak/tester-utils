@@ -121,3 +121,17 @@ func TestStdin(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 	assert.True(t, e.HasExited(), "Expected to have exited")
 }
+
+func TestRunWithStdin(t *testing.T) {
+	e := NewExecutable("grep")
+
+	result, err := e.RunWithStdin([]byte("has cat"), "cat")
+	assert.NoError(t, err)
+
+	assert.Equal(t, result.ExitCode, 0)
+
+	result, err = e.RunWithStdin([]byte("only dog"), "cat")
+	assert.NoError(t, err)
+
+	assert.Equal(t, result.ExitCode, 1)
+}

@@ -161,6 +161,20 @@ func (e *Executable) Run(args ...string) (ExecutableResult, error) {
 	return e.Wait()
 }
 
+// RunWithStdin starts the specified command, sends input, waits for it to complete and returns the
+// result.
+func (e *Executable) RunWithStdin(stdin []byte, args ...string) (ExecutableResult, error) {
+	var err error
+
+	if err = e.Start(args...); err != nil {
+		return ExecutableResult{}, err
+	}
+
+	e.StdinPipe.Write(stdin)
+
+	return e.Wait()
+}
+
 // Wait waits for the program to finish and results the result
 func (e *Executable) Wait() (ExecutableResult, error) {
 	defer func() {
