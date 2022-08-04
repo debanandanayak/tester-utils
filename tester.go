@@ -86,3 +86,20 @@ func (tester Tester) PrintSuccessMessage() {
 		fmt.Println("")
 	}
 }
+
+// RunCLI executes the tester based on user-provided env vars
+func (tester Tester) RunCLI() int {
+	tester.PrintDebugContext()
+
+	if !tester.RunStages() {
+		tester.PrintFailureMessage()
+		return 1
+	}
+
+	if !tester.RunAntiCheatStages() {
+		return 1
+	}
+
+	tester.PrintSuccessMessage()
+	return 0
+}
