@@ -28,7 +28,7 @@ func (t TesterDefinition) StageBySlug(slug string) Stage {
 
 type stageYAML struct {
 	Slug  string `yaml:"slug"`
-	Title string `yaml:"title"`
+	Title string `yaml:"name"`
 }
 
 type courseYAML struct {
@@ -62,6 +62,6 @@ func (testerDefinition TesterDefinition) TestAgainstYAML(t testing.T, yamlPath s
 	for _, stage := range c.Stages {
 		stageInDefinition := testerDefinition.StageBySlug(stage.Slug)
 
-		assert.Equal(t, stageInDefinition.Title, stage.Title)
+		assert.Equal(t, stage.Title, stageInDefinition.Title)
 	}
 }
