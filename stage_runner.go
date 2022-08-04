@@ -63,6 +63,10 @@ func (r stageRunner) LastStageSlug() string {
 // Run runs all tests in a stageRunner
 func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
 	for _, stage := range r.stages {
+		if stage.Slug != r.stages[0].Slug {
+			fmt.Println("")
+		}
+
 		stageHarness := StageHarness{
 			Logger:     r.getLoggerForStage(isDebug, stage),
 			Executable: executable,
