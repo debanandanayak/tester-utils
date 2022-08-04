@@ -22,6 +22,8 @@ type Executable struct {
 	// WorkingDir can be set before calling Start or Run to customize the working directory of the executable.
 	WorkingDir string
 
+	StdinPipe io.WriteCloser
+
 	// These are set & removed together
 	atleastOneReadDone bool
 	cmd                *exec.Cmd
@@ -113,6 +115,11 @@ func (e *Executable) Start(args ...string) error {
 	e.stderrBuffer = bytes.NewBuffer(e.stderrBytes)
 	e.stderrLineWriter = linewriter.New(newLoggerWriter(e.loggerFunc), 500*time.Millisecond)
 
+	e.StdinPipe, err = e.cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+
 	err = e.cmd.Start()
 	if err != nil {
 		return err
@@ -168,7 +175,10 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 		e.stdoutLineWriter = nil
 		e.stderrLineWriter = nil
 		e.readDone = nil
+		e.StdinPipe = nil
 	}()
+
+	e.StdinPipe.Close()
 
 	<-e.readDone
 	<-e.readDone
@@ -186,6 +196,7 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 
 	stdout := e.stdoutBuffer.Bytes()
 	stderr := e.stderrBuffer.Bytes()
+
 	return ExecutableResult{
 		Stdout:   stdout,
 		Stderr:   stderr,

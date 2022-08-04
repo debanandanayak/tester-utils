@@ -107,3 +107,17 @@ func TestHasExited(t *testing.T) {
 	time.Sleep(150 * time.Millisecond)
 	assert.True(t, e.HasExited(), "Expected to have exited")
 }
+
+func TestStdin(t *testing.T) {
+	e := NewExecutable("grep")
+
+	e.Start("cat")
+	assert.False(t, e.HasExited(), "Expected to not have exited")
+
+	e.StdinPipe.Write([]byte("has cat"))
+	assert.False(t, e.HasExited(), "Expected to not have exited")
+
+	e.StdinPipe.Close()
+	time.Sleep(100 * time.Millisecond)
+	assert.True(t, e.HasExited(), "Expected to have exited")
+}

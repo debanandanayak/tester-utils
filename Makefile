@@ -7,3 +7,6 @@ release:
 
 test:
 	go test -v ./...
+
+test_and_watch:
+	onchange '**/*' -- go test -v ./...
