@@ -64,35 +64,11 @@ func (tester Tester) IsLastStage() bool {
 	return tester.stageRunner.LastStageSlug() == tester.context.currentStageSlug
 }
 
-// PrintFailureMessage is to be executed if RunStages fails. Don't execute if RunAntiCheatStages fails.
-func (tester Tester) PrintFailureMessage() {
-	fmt.Println("")
-	fmt.Printf("View stage instructions at: %s\n", tester.context.coursePageUrl)
-	fmt.Println("")
-}
-
-// PrintSuccessMessage is to be executed after RunStages and RunAntiCheatStages
-func (tester Tester) PrintSuccessMessage() {
-	fmt.Println("")
-	fmt.Println("All tests ran successfully. Congrats!")
-
-	if tester.IsLastStage() {
-		fmt.Println("")
-		fmt.Printf("Want to try another language or approach? Visit the course page: %s\n", tester.context.coursePageUrl)
-		fmt.Println("")
-	} else {
-		fmt.Println("")
-		fmt.Printf("View instructions for the next stage at: %s\n", tester.context.coursePageUrl)
-		fmt.Println("")
-	}
-}
-
 // RunCLI executes the tester based on user-provided env vars
 func (tester Tester) RunCLI() int {
 	tester.PrintDebugContext()
 
 	if !tester.RunStages() {
-		tester.PrintFailureMessage()
 		return 1
 	}
 
@@ -100,6 +76,5 @@ func (tester Tester) RunCLI() int {
 		return 1
 	}
 
-	tester.PrintSuccessMessage()
 	return 0
 }
