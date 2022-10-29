@@ -101,7 +101,6 @@ func CompareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutput
 func runCLIStage(testerDefinition TesterDefinition, slug string, path string) (exitCode int) {
 	tester, err := NewTester(map[string]string{
 		"CODECRAFTERS_CURRENT_STAGE_SLUG": slug,
-		"CODECRAFTERS_COURSE_PAGE_URL":    "http://dummy_url",
 		"CODECRAFTERS_SUBMISSION_DIR":     path,
 	}, testerDefinition)
 
