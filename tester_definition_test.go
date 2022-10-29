@@ -27,13 +27,13 @@ func TestTestAgainstYAMLFailure(t *testing.T) {
 func TestTestAgainstYAMLSuccess(t *testing.T) {
 	definition := TesterDefinition{
 		Stages: []Stage{
-			{Slug: "init"},
-			{Slug: "ping-pong"},
-			{Slug: "ping-pong-multiple"},
-			{Slug: "concurrent-clients"},
-			{Slug: "echo"},
-			{Slug: "set_get"},
-			{Slug: "expiry"},
+			{Slug: "init", Title: "Bind to a port"},
+			{Slug: "ping-pong", Title: "Respond to PING"},
+			{Slug: "ping-pong-multiple", Title: "Respond to multiple PINGs"},
+			{Slug: "concurrent-clients", Title: "Handle concurrent clients"},
+			{Slug: "echo", Title: "Implement the ECHO command"},
+			{Slug: "set_get", Title: "Implement the SET & GET commands"},
+			{Slug: "expiry", Title: "Expiry"},
 		},
 	}
 
