@@ -57,7 +57,13 @@ func (testerDefinition TesterDefinition) TestAgainstYAML(t testing.T, yamlPath s
 		slugsInDefinition = append(slugsInDefinition, stage.Slug)
 	}
 
-	assert.Equal(t, slugsInYaml, slugsInDefinition)
+	if !assert.Equal(t, slugsInYaml, slugsInDefinition) {
+		return
+	}
+
+	for stageIndex, _ := range c.Stages {
+		assert.Equal(t, stageIndex+1, testerDefinition.Stages[stageIndex].Number)
+	}
 
 	for _, stage := range c.Stages {
 		stageInDefinition := testerDefinition.StageBySlug(stage.Slug)
