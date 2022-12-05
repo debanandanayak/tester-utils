@@ -135,3 +135,16 @@ func TestRunWithStdin(t *testing.T) {
 
 	assert.Equal(t, result.ExitCode, 1)
 }
+
+// Rogue == doesn't respond to SIGTERM
+func TestTerminatesRoguePrograms(t *testing.T) {
+	e := NewExecutable("bash")
+
+	err := e.Start("-c", "trap '' SIGTERM SIGINT; sleep 60")
+	assert.NoError(t, err)
+
+	time.Sleep(100 * time.Millisecond)
+
+	err = e.Kill()
+	assert.EqualError(t, err, "program failed to exit in 1 second after receiving sigterm")
+}

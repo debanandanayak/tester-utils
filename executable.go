@@ -3,6 +3,7 @@ package tester_utils
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"time"
 
@@ -220,9 +221,24 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 
 // Kill terminates the program
 func (e *Executable) Kill() error {
-	syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM)  // Don't know if this is required
-	syscall.Kill(-e.cmd.Process.Pid, syscall.SIGTERM) // Kill the whole process group
+	doneChannel := make(chan error, 1)
 
-	_, err := e.Wait()
+	go func() {
+		syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM)  // Don't know if this is required
+		syscall.Kill(-e.cmd.Process.Pid, syscall.SIGTERM) // Kill the whole process group
+		_, err := e.Wait()
+		doneChannel <- err
+	}()
+
+	var err error
+	select {
+	case doneError := <-doneChannel:
+		err = doneError
+	case <-time.After(1 * time.Second):
+		err = fmt.Errorf("program failed to exit in 1 second after receiving sigterm")
+		syscall.Kill(e.cmd.Process.Pid, syscall.SIGKILL)  // Don't know if this is required
+		syscall.Kill(-e.cmd.Process.Pid, syscall.SIGKILL) // Kill the whole process group
+	}
+
 	return err
 }
