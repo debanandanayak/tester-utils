@@ -89,6 +89,7 @@ func CompareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutput
 		}
 
 		os.Stdout.Write(result.Stdout)
+		os.Stderr.Write([]byte("\n\nRe-run this test with CODECRAFTERS_RECORD_FIXTURES=true to update fixtures\n\n"))
 		t.FailNow()
 	}
 }
