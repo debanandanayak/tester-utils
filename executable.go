@@ -199,8 +199,6 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 	<-e.readDone
 
 	err := e.cmd.Wait()
-	e.stdoutLineWriter.Flush()
-	e.stderrLineWriter.Flush()
 
 	if err != nil {
 		// Ignore exit errors, we'd rather send the exit code back
@@ -208,6 +206,9 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 			return ExecutableResult{}, err
 		}
 	}
+
+	e.stdoutLineWriter.Flush()
+	e.stderrLineWriter.Flush()
 
 	stdout := e.stdoutBuffer.Bytes()
 	stderr := e.stderrBuffer.Bytes()
@@ -238,6 +239,8 @@ func (e *Executable) Kill() error {
 		err = fmt.Errorf("program failed to exit in 2 seconds after receiving sigterm")
 		syscall.Kill(e.cmd.Process.Pid, syscall.SIGKILL)  // Don't know if this is required
 		syscall.Kill(-e.cmd.Process.Pid, syscall.SIGKILL) // Kill the whole process group
+
+		<-doneChannel // Wait for Wait() to return
 	}
 
 	return err
