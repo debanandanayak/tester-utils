@@ -75,21 +75,6 @@ func NewVerboseExecutable(path string, loggerFunc func(string)) *Executable {
 	return &Executable{path: path, timeoutInSecs: 10, loggerFunc: loggerFunc}
 }
 
-func (e *Executable) resetState() {
-	e.atleastOneReadDone = false
-	e.cmd = nil
-	e.stdoutPipe = nil
-	e.stderrPipe = nil
-	e.stdoutBuffer = nil
-	e.stderrBuffer = nil
-	e.stdoutBytes = nil
-	e.stderrBytes = nil
-	e.stdoutLineWriter = nil
-	e.stderrLineWriter = nil
-	e.readDone = nil
-	e.StdinPipe = nil
-}
-
 func (e *Executable) isRunning() bool {
 	return e.cmd != nil
 }
@@ -194,7 +179,18 @@ func (e *Executable) RunWithStdin(stdin []byte, args ...string) (ExecutableResul
 // Wait waits for the program to finish and results the result
 func (e *Executable) Wait() (ExecutableResult, error) {
 	defer func() {
-		e.resetState()
+		e.atleastOneReadDone = false
+		e.cmd = nil
+		e.stdoutPipe = nil
+		e.stderrPipe = nil
+		e.stdoutBuffer = nil
+		e.stderrBuffer = nil
+		e.stdoutBytes = nil
+		e.stderrBytes = nil
+		e.stdoutLineWriter = nil
+		e.stderrLineWriter = nil
+		e.readDone = nil
+		e.StdinPipe = nil
 	}()
 
 	e.StdinPipe.Close()
