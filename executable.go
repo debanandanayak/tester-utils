@@ -226,10 +226,6 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 
 // Kill terminates the program
 func (e *Executable) Kill() error {
-	defer func() {
-		e.resetState()
-	}()
-
 	doneChannel := make(chan error, 1)
 
 	go func() {
@@ -247,6 +243,8 @@ func (e *Executable) Kill() error {
 		err = fmt.Errorf("program failed to exit in 2 seconds after receiving sigterm")
 		syscall.Kill(e.cmd.Process.Pid, syscall.SIGKILL)  // Don't know if this is required
 		syscall.Kill(-e.cmd.Process.Pid, syscall.SIGKILL) // Kill the whole process group
+
+		<-doneChannel // Wait for Wait() to return
 	}
 
 	return err
