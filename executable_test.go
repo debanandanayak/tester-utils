@@ -147,4 +147,13 @@ func TestTerminatesRoguePrograms(t *testing.T) {
 
 	err = e.Kill()
 	assert.EqualError(t, err, "program failed to exit in 2 seconds after receiving sigterm")
+
+	// Starting again shouldn't throw an error
+	err = e.Start("-c", "trap '' SIGTERM SIGINT; sleep 60")
+	assert.NoError(t, err)
+
+	time.Sleep(100 * time.Millisecond)
+
+	err = e.Kill()
+	assert.EqualError(t, err, "program failed to exit in 2 seconds after receiving sigterm")
 }
