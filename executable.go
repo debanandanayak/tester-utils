@@ -203,8 +203,6 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 	<-e.readDone
 
 	err := e.cmd.Wait()
-	e.stdoutLineWriter.Flush()
-	e.stderrLineWriter.Flush()
 
 	if err != nil {
 		// Ignore exit errors, we'd rather send the exit code back
@@ -212,6 +210,9 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 			return ExecutableResult{}, err
 		}
 	}
+
+	e.stdoutLineWriter.Flush()
+	e.stderrLineWriter.Flush()
 
 	stdout := e.stdoutBuffer.Bytes()
 	stderr := e.stderrBuffer.Bytes()
