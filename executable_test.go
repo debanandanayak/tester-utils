@@ -146,5 +146,5 @@ func TestTerminatesRoguePrograms(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	err = e.Kill()
-	assert.EqualError(t, err, "program failed to exit in 1 second after receiving sigterm")
+	assert.EqualError(t, err, "program failed to exit in 2 seconds after receiving sigterm")
 }
