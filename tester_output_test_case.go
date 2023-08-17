@@ -3,12 +3,13 @@ package tester_utils
 import (
 	"bytes"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type TesterOutputTestCase struct {
@@ -100,7 +101,13 @@ func CompareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutput
 //	return re.ReplaceAll(testerOutput, []byte("read tcp 127.0.0.1:xxxxx+->127.0.0.1:6379: read: connection reset by peer"))
 //}
 
-func runCLIStage(testerDefinition TesterDefinition, slug string, path string) (exitCode int) {
+func runCLIStage(testerDefinition TesterDefinition, slug string, relativePath string) (exitCode int) {
+	// When a command is run with a different working directory, a relative path can cause problems.
+	path, err := filepath.Abs(relativePath)
+	if err != nil {
+		panic(err)
+	}
+
 	tester, err := NewTester(map[string]string{
 		"CODECRAFTERS_CURRENT_STAGE_SLUG": slug,
 		"CODECRAFTERS_SUBMISSION_DIR":     path,
