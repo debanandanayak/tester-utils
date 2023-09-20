@@ -45,12 +45,26 @@ func GetTesterContext(env map[string]string, executableFileName string) (TesterC
 
 	testCasesJson, ok := env["CODECRAFTERS_TEST_CASES_JSON"]
 	if !ok {
-		return TesterContext{}, fmt.Errorf("CODECRAFTERS_TEST_CASES env var not found")
+		return TesterContext{}, fmt.Errorf("CODECRAFTERS_TEST_CASES_JSON env var not found")
 	}
 
 	testCases := []TesterContextTestCase{}
 	if err := json.Unmarshal([]byte(testCasesJson), &testCases); err != nil {
-		return TesterContext{}, fmt.Errorf("failed to parse CODECRAFTERS_TEST_CASES: %s", err)
+		return TesterContext{}, fmt.Errorf("failed to parse CODECRAFTERS_TEST_CASES_JSON: %s", err)
+	}
+
+	for _, testCase := range testCases {
+		if testCase.Slug == "" {
+			return TesterContext{}, fmt.Errorf("CODECRAFTERS_TEST_CASES_JSON contains a test case with an empty slug")
+		}
+
+		if testCase.TesterLogPrefix == "" {
+			return TesterContext{}, fmt.Errorf("CODECRAFTERS_TEST_CASES_JSON contains a test case with an empty tester_log_prefix")
+		}
+
+		if testCase.Title == "" {
+			return TesterContext{}, fmt.Errorf("CODECRAFTERS_TEST_CASES_JSON contains a test case with an empty title")
+		}
 	}
 
 	configPath := path.Join(submissionDir, "codecrafters.yml")
