@@ -15,26 +15,6 @@ type stageRunner struct {
 	stages  []Stage
 }
 
-// Stage represents a stage in a challenge.
-//
-// The Slug in a Stage should match that in the course's YAML definition.
-type Stage struct {
-	Slug                    string
-	Number                  int
-	Title                   string
-	TestFunc                func(stageHarness *StageHarness) error
-	Timeout                 time.Duration
-	ShouldRunPreviousStages bool
-}
-
-func (s Stage) CustomOrDefaultTimeout() time.Duration {
-	if (s.Timeout == 0) || (s.Timeout == time.Duration(0)) {
-		return 10 * time.Second
-	} else {
-		return s.Timeout
-	}
-}
-
 func newStageRunner(stages []Stage) stageRunner {
 	return stageRunner{
 		stages: stages,

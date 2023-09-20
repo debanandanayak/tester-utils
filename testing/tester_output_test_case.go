@@ -16,10 +16,19 @@ import (
 )
 
 type TesterOutputTestCase struct {
+	// CodePath is the path to the code that'll be tested.
 	CodePath            string
+
+	// ExpectedExitCode is the exit code that we expect the tester to return.
 	ExpectedExitCode    int
+
+	// StageName is the name of the stage that we want to test.
 	StageName           string
+
+	// StdoutFixturePath is the path to the fixture file that contains the expected stdout output.
 	StdoutFixturePath   string
+
+	// NormalizeOutputFunc is a function that normalizes the tester's output. This is useful for removing things like timestamps.
 	NormalizeOutputFunc func([]byte) []byte
 }
 
@@ -37,12 +46,12 @@ func TestTesterOutput(t *testing.T, testerDefinition tester_utils.TesterDefiniti
 			}
 
 			m.End()
-			CompareOutputWithFixture(t, m.ReadStdout(), testCase.NormalizeOutputFunc, testCase.StdoutFixturePath)
+			compareOutputWithFixture(t, m.ReadStdout(), testCase.NormalizeOutputFunc, testCase.StdoutFixturePath)
 		})
 	}
 }
 
-func CompareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutputFunc func([]byte) []byte, fixturePath string) {
+func compareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutputFunc func([]byte) []byte, fixturePath string) {
 	shouldRecordFixture := os.Getenv("CODECRAFTERS_RECORD_FIXTURES")
 
 	if shouldRecordFixture == "true" {
