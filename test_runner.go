@@ -56,7 +56,7 @@ func (r testRunner) Run(isDebug bool, executable *executable.Executable) bool {
 		}
 
 		logger := stageHarness.Logger
-		logger.Infof("Running tests for %s:", step.title)
+		logger.Infof("Running tests for %s", step.title)
 
 		stepResultChannel := make(chan error, 1)
 		go func() {
