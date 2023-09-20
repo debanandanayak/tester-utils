@@ -21,10 +21,54 @@ func NewTester(env map[string]string, definition TesterDefinition) (Tester, erro
 		return Tester{}, err
 	}
 
-	return Tester{
+	tester := Tester{
 		context:    context,
 		definition: definition,
-	}, nil
+	}
+
+	if err := tester.validateContext(); err != nil {
+		return Tester{}, err
+	}
+
+	return tester, nil
+}
+
+func (tester Tester) PrintDebugContext() {
+	// PrintDebugContext is to be run as early as possible after creating a Tester func (tester Tester) PrintDebugContext() {
+	if !tester.context.IsDebug {
+		return
+	}
+
+	tester.context.Print()
+	fmt.Println("")
+}
+
+// RunAntiCheatStages runs any anti-cheat stages specified in the TesterDefinition. Only critical logs are emitted. If
+// the stages pass, the user won't see any visible output.
+func (tester Tester) RunAntiCheatStages() bool {
+	return tester.getAntiCheatRunner().Run(false, tester.getQuietExecutable())
+}
+
+// RunStages runs all the stages upto the current stage the user is attempting. Returns true if all stages pass.
+func (tester Tester) RunStages() bool {
+	return tester.getRunner().Run(tester.context.IsDebug, tester.getExecutable())
+}
+
+// RunCLI executes the tester based on user-provided env vars
+func (tester Tester) RunCLI() int {
+	tester.PrintDebugContext()
+
+	// Validate context?
+
+	if !tester.RunStages() {
+		return 1
+	}
+
+	if !tester.RunAntiCheatStages() {
+		return 1
+	}
+
+	return 0
 }
 
 func (tester Tester) getRunner() testRunner {
@@ -70,40 +114,14 @@ func (tester Tester) getExecutable() *executable.Executable {
 	return executable.NewVerboseExecutable(tester.context.ExecutablePath, logger.GetLogger(true, "[your_program] ").Plainln)
 }
 
-// PrintDebugContext is to be run as early as possible after creating a Tester
-func (tester Tester) PrintDebugContext() {
-	if !tester.context.IsDebug {
-		return
+func (tester Tester) validateContext() error {
+	for _, testerContextTestCase := range tester.context.TestCases {
+		testerDefinitionTestCase := tester.definition.TestCaseBySlug(testerContextTestCase.Slug)
+
+		if testerDefinitionTestCase.Slug != testerContextTestCase.Slug {
+			return fmt.Errorf("tester context does not have test case with slug %s", testerContextTestCase.Slug)
+		}
 	}
 
-	tester.context.Print()
-	fmt.Println("")
-}
-
-// RunAntiCheatStages runs any anti-cheat stages specified in the TesterDefinition. Only critical logs are emitted. If
-// the stages pass, the user won't see any visible output.
-func (tester Tester) RunAntiCheatStages() bool {
-	return tester.getAntiCheatRunner().Run(false, tester.getQuietExecutable())
-}
-
-// RunStages runs all the stages upto the current stage the user is attempting. Returns true if all stages pass.
-func (tester Tester) RunStages() bool {
-	return tester.getRunner().Run(tester.context.IsDebug, tester.getExecutable())
-}
-
-// RunCLI executes the tester based on user-provided env vars
-func (tester Tester) RunCLI() int {
-	tester.PrintDebugContext()
-
-	// Validate context?
-
-	if !tester.RunStages() {
-		return 1
-	}
-
-	if !tester.RunAntiCheatStages() {
-		return 1
-	}
-
-	return 0
+	return nil
 }
