@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+
+	"github.com/codecrafters-io/tester-utils/logger"
 )
 
 // stageRunner is used to run multiple stages
@@ -42,11 +44,11 @@ func newQuietStageRunner(stages []Stage) stageRunner {
 	return stageRunner{isQuiet: true, stages: stages}
 }
 
-func (r stageRunner) getLoggerForStage(isDebug bool, stage Stage) *Logger {
+func (r stageRunner) getLoggerForStage(isDebug bool, stage Stage) *logger.Logger {
 	if r.isQuiet {
-		return getQuietLogger("")
+		return logger.GetQuietLogger("")
 	} else {
-		return getLogger(isDebug, fmt.Sprintf("[stage-%d] ", stage.Number))
+		return logger.GetLogger(isDebug, fmt.Sprintf("[stage-%d] ", stage.Number))
 	}
 }
 
@@ -156,7 +158,7 @@ func shuffleStages(stages []Stage) []Stage {
 	return ret
 }
 
-func (r stageRunner) reportTestError(err error, isDebug bool, logger *Logger) {
+func (r stageRunner) reportTestError(err error, isDebug bool, logger *logger.Logger) {
 	logger.Errorf("%s", err)
 
 	if isDebug {
