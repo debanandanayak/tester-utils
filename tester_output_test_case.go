@@ -84,13 +84,17 @@ func CompareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutput
 			panic(err)
 		}
 
-		result, err := diffExecutable.Run(fixturePath, tmpFile.Name())
+		result, err := diffExecutable.Run("-u", fixturePath, tmpFile.Name())
 		if err != nil {
 			panic(err)
 		}
 
+		// Remove the first two lines of the diff output
+		diffContents := bytes.SplitN(result.Stdout, []byte("\n"), 3)[2]
+
+
 		os.Stdout.Write([]byte("\n\nDifferences detected:\n\n"))
-		os.Stdout.Write(result.Stdout)
+		os.Stdout.Write(diffContents)
 		os.Stdout.Write([]byte("\n\nRe-run this test with CODECRAFTERS_RECORD_FIXTURES=true to update fixtures\n\n"))
 		t.FailNow()
 	}
