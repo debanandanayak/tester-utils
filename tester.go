@@ -8,9 +8,9 @@ import (
 )
 
 type Tester struct {
-	antiCheatStageRunner stageRunner
-	stageRunner          stageRunner
-	context              testerContext
+	antiCheatRunner testRunner
+	runner          testRunner
+	context         testerContext
 }
 
 // NewTester creates a Tester based on the TesterDefinition provided

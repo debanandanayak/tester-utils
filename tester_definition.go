@@ -1,12 +1,7 @@
 package tester_utils
 
 import (
-	"io/ioutil"
 	"time"
-
-	"github.com/mitchellh/go-testing-interface"
-	"github.com/stretchr/testify/assert"
-	"gopkg.in/yaml.v2"
 )
 
 // TestCase represents a test case that'll be run against the user's code.

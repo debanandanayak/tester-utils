@@ -10,7 +10,7 @@ import (
 
 func TestTestAgainstYAMLFailure(t *testing.T) {
 	definition := TesterDefinition{
-		Stages: []Stage{
+		TestCases: []TestCase{
 			{Slug: "test-1"},
 			{Slug: "test-2"},
 		},
@@ -19,7 +19,7 @@ func TestTestAgainstYAMLFailure(t *testing.T) {
 	runtimeT := &testingInterface.RuntimeT{}
 
 	yamlPath := "test_helpers/tester_definition_test/course_definition.yml"
-	definition.TestAgainstYAML(runtimeT, yamlPath)
+	ValidateTesterDefinitionAgainstYAML(runtimeT, definition, yamlPath)
 
 	assert.True(t, runtimeT.Failed())
 }
