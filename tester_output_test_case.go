@@ -92,7 +92,6 @@ func CompareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutput
 		// Remove the first two lines of the diff output
 		diffContents := bytes.SplitN(result.Stdout, []byte("\n"), 3)[2]
 
-
 		os.Stdout.Write([]byte("\n\nDifferences detected:\n\n"))
 		os.Stdout.Write(diffContents)
 		os.Stdout.Write([]byte("\n\nRe-run this test with CODECRAFTERS_RECORD_FIXTURES=true to update fixtures\n\n"))
