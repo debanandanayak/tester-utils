@@ -1,4 +1,4 @@
-package tester_utils
+package executable
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -11,7 +11,7 @@ func TestStart(t *testing.T) {
 	assertErrorContains(t, err, "no such file")
 	assertErrorContains(t, err, "/blah")
 
-	err = NewExecutable("./test_helpers/executable_test/stdout_echo.sh").Start()
+	err = NewExecutable("./test_helpers/stdout_echo.sh").Start()
 	assert.NoError(t, err)
 }
 
@@ -20,7 +20,7 @@ func assertErrorContains(t *testing.T, err error, expectedMsg string) {
 }
 
 func TestRun(t *testing.T) {
-	e := NewExecutable("./test_helpers/executable_test/stdout_echo.sh")
+	e := NewExecutable("./test_helpers/stdout_echo.sh")
 	result, err := e.Run("hey")
 	assert.NoError(t, err)
 	assert.Equal(t, "hey\n", string(result.Stdout))
@@ -28,7 +28,7 @@ func TestRun(t *testing.T) {
 
 func TestOutputCapture(t *testing.T) {
 	// Stdout capture
-	e := NewExecutable("./test_helpers/executable_test/stdout_echo.sh")
+	e := NewExecutable("./test_helpers/stdout_echo.sh")
 	result, err := e.Run("hey")
 
 	assert.NoError(t, err)
@@ -36,7 +36,7 @@ func TestOutputCapture(t *testing.T) {
 	assert.Equal(t, "", string(result.Stderr))
 
 	// Stderr capture
-	e = NewExecutable("./test_helpers/executable_test/stderr_echo.sh")
+	e = NewExecutable("./test_helpers/stderr_echo.sh")
 	result, err = e.Run("hey")
 
 	assert.NoError(t, err)
@@ -45,7 +45,7 @@ func TestOutputCapture(t *testing.T) {
 }
 
 func TestLargeOutputCapture(t *testing.T) {
-	e := NewExecutable("./test_helpers/executable_test/large_echo.sh")
+	e := NewExecutable("./test_helpers/large_echo.sh")
 	result, err := e.Run("hey")
 
 	assert.NoError(t, err)
@@ -54,7 +54,7 @@ func TestLargeOutputCapture(t *testing.T) {
 }
 
 func TestExitCode(t *testing.T) {
-	e := NewExecutable("./test_helpers/executable_test/exit_with.sh")
+	e := NewExecutable("./test_helpers/exit_with.sh")
 
 	result, _ := e.Run("0")
 	assert.Equal(t, 0, result.ExitCode)
@@ -67,7 +67,7 @@ func TestExitCode(t *testing.T) {
 }
 
 func TestExecutableStartNotAllowedIfInProgress(t *testing.T) {
-	e := NewExecutable("./test_helpers/executable_test/sleep_for.sh")
+	e := NewExecutable("./test_helpers/sleep_for.sh")
 
 	// Run once
 	err := e.Start("0.01")
@@ -89,7 +89,7 @@ func TestExecutableStartNotAllowedIfInProgress(t *testing.T) {
 }
 
 func TestSuccessiveExecutions(t *testing.T) {
-	e := NewExecutable("./test_helpers/executable_test/stdout_echo.sh")
+	e := NewExecutable("./test_helpers/stdout_echo.sh")
 
 	result, _ := e.Run("1")
 	assert.Equal(t, "1\n", string(result.Stdout))
@@ -99,7 +99,7 @@ func TestSuccessiveExecutions(t *testing.T) {
 }
 
 func TestHasExited(t *testing.T) {
-	e := NewExecutable("./test_helpers/executable_test/sleep_for.sh")
+	e := NewExecutable("./test_helpers/sleep_for.sh")
 
 	e.Start("0.1")
 	assert.False(t, e.HasExited(), "Expected to not have exited")

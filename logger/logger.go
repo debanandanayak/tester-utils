@@ -1,4 +1,4 @@
-package tester_utils
+package logger
 
 import (
 	"log"
@@ -31,35 +31,46 @@ func yellowColorize(fstring string, args ...interface{}) string {
 	return colorize(color.FgYellow, fstring, args...)
 }
 
+// Logger is a wrapper around log.Logger with the following features:
+//   - Supports a prefix
+//   - Adds colors to the output
+//   - Debug mode (all logs, debug and above)
+//   - Quiet mode (only critical logs)
 type Logger struct {
-	logger  log.Logger
-	isDebug bool
-	isQuiet bool // Only CRITICAL logs
+	// IsDebug is used to determine whether to emit debug logs.
+	IsDebug bool
+
+	// IsQuiet is used to determine whether to emit non-critical logs.
+	IsQuiet bool
+
+	logger log.Logger
 }
 
-func getLogger(isDebug bool, prefix string) *Logger {
+// GetLogger Returns a logger.
+func GetLogger(isDebug bool, prefix string) *Logger {
 	color.NoColor = false
 
 	prefix = yellowColorize(prefix)
 	return &Logger{
 		logger:  *log.New(os.Stdout, prefix, 0),
-		isDebug: isDebug,
+		IsDebug: isDebug,
 	}
 }
 
-func getQuietLogger(prefix string) *Logger {
+// GetQuietLogger Returns a logger that only emits critical logs. Useful for anti-cheat stages.
+func GetQuietLogger(prefix string) *Logger {
 	color.NoColor = false
 
 	prefix = yellowColorize(prefix)
 	return &Logger{
 		logger:  *log.New(os.Stdout, prefix, 0),
-		isDebug: false,
-		isQuiet: true,
+		IsDebug: false,
+		IsQuiet: true,
 	}
 }
 
 func (l *Logger) Successf(fstring string, args ...interface{}) {
-	if l.isQuiet {
+	if l.IsQuiet {
 		return
 	}
 	msg := successColorize(fstring, args...)
@@ -67,7 +78,7 @@ func (l *Logger) Successf(fstring string, args ...interface{}) {
 }
 
 func (l *Logger) Successln(msg string) {
-	if l.isQuiet {
+	if l.IsQuiet {
 		return
 	}
 	msg = successColorize(msg)
@@ -75,7 +86,7 @@ func (l *Logger) Successln(msg string) {
 }
 
 func (l *Logger) Infof(fstring string, args ...interface{}) {
-	if l.isQuiet {
+	if l.IsQuiet {
 		return
 	}
 	msg := infoColorize(fstring, args...)
@@ -83,7 +94,7 @@ func (l *Logger) Infof(fstring string, args ...interface{}) {
 }
 
 func (l *Logger) Infoln(msg string) {
-	if l.isQuiet {
+	if l.IsQuiet {
 		return
 	}
 	msg = infoColorize(msg)
@@ -92,7 +103,7 @@ func (l *Logger) Infoln(msg string) {
 
 // Criticalf is to be used only in anti-cheat stages
 func (l *Logger) Criticalf(fstring string, args ...interface{}) {
-	if !l.isQuiet {
+	if !l.IsQuiet {
 		panic("Critical is only for quiet loggers")
 	}
 	msg := errorColorize(fstring, args...)
@@ -101,7 +112,7 @@ func (l *Logger) Criticalf(fstring string, args ...interface{}) {
 
 // Criticalln is to be used only in anti-cheat stages
 func (l *Logger) Criticalln(msg string) {
-	if !l.isQuiet {
+	if !l.IsQuiet {
 		panic("Critical is only for quiet loggers")
 	}
 	msg = errorColorize(msg)
@@ -109,7 +120,7 @@ func (l *Logger) Criticalln(msg string) {
 }
 
 func (l *Logger) Errorf(fstring string, args ...interface{}) {
-	if l.isQuiet {
+	if l.IsQuiet {
 		return
 	}
 	msg := errorColorize(fstring, args...)
@@ -117,7 +128,7 @@ func (l *Logger) Errorf(fstring string, args ...interface{}) {
 }
 
 func (l *Logger) Errorln(msg string) {
-	if l.isQuiet {
+	if l.IsQuiet {
 		return
 	}
 	msg = errorColorize(msg)
@@ -125,7 +136,7 @@ func (l *Logger) Errorln(msg string) {
 }
 
 func (l *Logger) Debugf(fstring string, args ...interface{}) {
-	if !l.isDebug {
+	if !l.IsDebug {
 		return
 	}
 	msg := debugColorize(fstring, args...)
@@ -133,7 +144,7 @@ func (l *Logger) Debugf(fstring string, args ...interface{}) {
 }
 
 func (l *Logger) Debugln(msg string) {
-	if !l.isDebug {
+	if !l.IsDebug {
 		return
 	}
 	msg = debugColorize(msg)
