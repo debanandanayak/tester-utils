@@ -1,4 +1,4 @@
-package tester_utils
+package testing
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	tester_utils "github.com/codecrafters-io/tester-utils"
 	"github.com/codecrafters-io/tester-utils/executable"
 	"github.com/codecrafters-io/tester-utils/stdio_mocker"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +23,7 @@ type TesterOutputTestCase struct {
 	NormalizeOutputFunc func([]byte) []byte
 }
 
-func TestTesterOutput(t *testing.T, testerDefinition TesterDefinition, testCases map[string]TesterOutputTestCase) {
+func TestTesterOutput(t *testing.T, testerDefinition tester_utils.TesterDefinition, testCases map[string]TesterOutputTestCase) {
 	m := stdio_mocker.NewStdIOMocker()
 	defer m.End()
 
@@ -106,14 +107,14 @@ func CompareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutput
 //	return re.ReplaceAll(testerOutput, []byte("read tcp 127.0.0.1:xxxxx+->127.0.0.1:6379: read: connection reset by peer"))
 //}
 
-func runCLIStage(testerDefinition TesterDefinition, slug string, relativePath string) (exitCode int) {
+func runCLIStage(testerDefinition tester_utils.TesterDefinition, slug string, relativePath string) (exitCode int) {
 	// When a command is run with a different working directory, a relative path can cause problems.
 	path, err := filepath.Abs(relativePath)
 	if err != nil {
 		panic(err)
 	}
 
-	tester, err := NewTester(map[string]string{
+	tester, err := tester_utils.NewTester(map[string]string{
 		"CODECRAFTERS_CURRENT_STAGE_SLUG": slug,
 		"CODECRAFTERS_SUBMISSION_DIR":     path,
 	}, testerDefinition)
