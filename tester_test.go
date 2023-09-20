@@ -3,6 +3,7 @@ package tester_utils
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,6 +17,34 @@ func failFunc(stageHarness *StageHarness) error {
 	return errors.New("fail")
 }
 
+func buildTestCasesJson(slugs []string) string {
+	testCases := []map[string]string{}
+
+	for index, slug := range slugs {
+		testCases = append(testCases, map[string]string{
+			"slug":            slug,
+			"test_log_prefix": fmt.Sprintf("test-%d", index+1),
+			"title":           fmt.Sprintf("Stage #%d: %s", index+1, slug),
+		})
+	}
+
+	testCasesJson, _ := json.Marshal(testCases)
+	return string(testCasesJson)
+}
+
+func buildTester(t *testing.T, definition TesterDefinition, testCasesJson string) Tester {
+	tester, err := NewTester(map[string]string{
+		"CODECRAFTERS_SUBMISSION_DIR":  "./test_helpers/valid_app_dir",
+		"CODECRAFTERS_TEST_CASES_JSON": buildTestCasesJson([]string{"test-1", "test-2"}),
+	}, definition)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	return tester
+}
+
 func TestAllStagesPass(t *testing.T) {
 	definition := TesterDefinition{
 		TestCases: []TestCase{
@@ -24,20 +53,7 @@ func TestAllStagesPass(t *testing.T) {
 		},
 	}
 
-	testCasesJson, _ := json.Marshal([]map[string]string{
-		{"slug": "test-1", "tester_log_prefix": "test-1", "title": "Stage #1: The First Stage"},
-		{"slug": "test-2", "tester_log_prefix": "test-2", "title": "Stage #2: The Second Stage"},
-	})
-
-	tester, err := NewTester(map[string]string{
-		"CODECRAFTERS_SUBMISSION_DIR":  "./test_helpers/valid_app_dir",
-		"CODECRAFTERS_TEST_CASES_JSON": string(testCasesJson),
-	}, definition)
-
-	if err != nil {
-		t.Error(err)
-	}
-
+	tester := buildTester(t, definition, buildTestCasesJson([]string{"test-1", "test-2"}))
 	exitCode := tester.RunCLI()
 	assert.Equal(t, exitCode, 0)
 }
@@ -50,20 +66,7 @@ func TestOneStageFails(t *testing.T) {
 		},
 	}
 
-	testCasesJson, _ := json.Marshal([]map[string]string{
-		{"slug": "test-1", "tester_log_prefix": "test-1", "title": "Stage #1: The First Stage"},
-		{"slug": "test-2", "tester_log_prefix": "test-2", "title": "Stage #2: The Second Stage"},
-	})
-
-	tester, err := NewTester(map[string]string{
-		"CODECRAFTERS_SUBMISSION_DIR":  "./test_helpers/valid_app_dir",
-		"CODECRAFTERS_TEST_CASES_JSON": string(testCasesJson),
-	}, definition)
-
-	if err != nil {
-		t.Error(err)
-	}
-
+	tester := buildTester(t, definition, buildTestCasesJson([]string{"test-1", "test-2"}))
 	exitCode := tester.RunCLI()
 	assert.Equal(t, exitCode, 1)
 }
