@@ -1,11 +1,10 @@
 package testing
 
 import (
-	"io/ioutil"
 	"os"
-	"testing"
 
 	tester_utils "github.com/codecrafters-io/tester-utils"
+	"github.com/mitchellh/go-testing-interface"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
@@ -20,7 +19,7 @@ type courseYAML struct {
 }
 
 // ValidateTesterDefinitionAgainstYAML tests whether the stage slugs in TesterDefintion match those in the course YAML at yamlPath.
-func ValidateTesterDefinitionAgainstYAML(t *testing.T, testerDefinition tester_utils.TesterDefinition, yamlPath string) {
+func ValidateTesterDefinitionAgainstYAML(t *testing.RuntimeT, testerDefinition tester_utils.TesterDefinition, yamlPath string) {
 	bytes, err := os.ReadFile(yamlPath)
 	if err != nil {
 		t.Fatal(err)
