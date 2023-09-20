@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/codecrafters-io/tester-utils/executable"
+	"github.com/codecrafters-io/tester-utils/stdio_mocker"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,7 +23,7 @@ type TesterOutputTestCase struct {
 }
 
 func TestTesterOutput(t *testing.T, testerDefinition TesterDefinition, testCases map[string]TesterOutputTestCase) {
-	m := NewStdIOMocker()
+	m := stdio_mocker.NewStdIOMocker()
 	defer m.End()
 
 	for testName, testCase := range testCases {
@@ -125,7 +126,7 @@ func runCLIStage(testerDefinition TesterDefinition, slug string, relativePath st
 	return tester.RunCLI()
 }
 
-func failWithMockerOutput(t *testing.T, m *IOMocker) {
+func failWithMockerOutput(t *testing.T, m *stdio_mocker.IOMocker) {
 	m.End()
 	t.Error(fmt.Sprintf("stdout: \n%s\n\nstderr: \n%s", m.ReadStdout(), m.ReadStderr()))
 	t.FailNow()

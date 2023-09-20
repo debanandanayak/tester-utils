@@ -1,4 +1,4 @@
-package tester_utils
+package stdio_mocker
 
 import (
 	"io/ioutil"
