@@ -54,14 +54,6 @@ func (tester Tester) RunStages() bool {
 	return stageRunner.Run(tester.context.isDebug, tester.getExecutable())
 }
 
-func (tester Tester) IsFirstStage() bool {
-	return tester.stageRunner.FirstStageSlug() == tester.context.currentStageSlug
-}
-
-func (tester Tester) IsLastStage() bool {
-	return tester.stageRunner.LastStageSlug() == tester.context.currentStageSlug
-}
-
 // RunCLI executes the tester based on user-provided env vars
 func (tester Tester) RunCLI() int {
 	tester.PrintDebugContext()
