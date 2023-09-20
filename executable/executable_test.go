@@ -1,4 +1,4 @@
-package tester_utils
+package executable
 
 import (
 	"github.com/stretchr/testify/assert"

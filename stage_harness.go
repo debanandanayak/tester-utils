@@ -1,6 +1,7 @@
 package tester_utils
 
 import (
+	"github.com/codecrafters-io/tester-utils/executable"
 	"github.com/codecrafters-io/tester-utils/logger"
 )
 
@@ -25,7 +26,7 @@ type StageHarness struct {
 	Logger *logger.Logger
 
 	// Executable is the program to be tested.
-	Executable *Executable
+	Executable *executable.Executable
 
 	// teardownFuncs are run once the error has been reported to the user
 	teardownFuncs []func()

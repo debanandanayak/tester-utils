@@ -61,7 +61,7 @@ func (testerDefinition TesterDefinition) TestAgainstYAML(t testing.T, yamlPath s
 		return
 	}
 
-	for stageIndex, _ := range c.Stages {
+	for stageIndex := range c.Stages {
 		assert.Equal(t, stageIndex+1, testerDefinition.Stages[stageIndex].Number)
 	}
 

@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/codecrafters-io/tester-utils/executable"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -73,7 +74,7 @@ func CompareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutput
 			panic(err)
 		}
 
-		diffExecutable := NewExecutable(diffExecutablePath)
+		diffExecutable := executable.NewExecutable(diffExecutablePath)
 
 		tmpFile, err := ioutil.TempFile("", "")
 		if err != nil {

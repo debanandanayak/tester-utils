@@ -1,6 +1,11 @@
 package tester_utils
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/codecrafters-io/tester-utils/executable"
+	"github.com/codecrafters-io/tester-utils/logger"
+)
 
 type Tester struct {
 	antiCheatStageRunner stageRunner
@@ -23,12 +28,12 @@ func NewTester(env map[string]string, definition TesterDefinition) (Tester, erro
 	}, nil
 }
 
-func (tester Tester) getQuietExecutable() *Executable {
-	return NewExecutable(tester.context.executablePath)
+func (tester Tester) getQuietExecutable() *executable.Executable {
+	return executable.NewExecutable(tester.context.executablePath)
 }
 
-func (tester Tester) getExecutable() *Executable {
-	return NewVerboseExecutable(tester.context.executablePath, getLogger(true, "[your_program] ").Plainln)
+func (tester Tester) getExecutable() *executable.Executable {
+	return executable.NewVerboseExecutable(tester.context.executablePath, logger.GetLogger(true, "[your_program] ").Plainln)
 }
 
 // PrintDebugContext is to be run as early as possible after creating a Tester

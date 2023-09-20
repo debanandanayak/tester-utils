@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/codecrafters-io/tester-utils/executable"
 	"github.com/codecrafters-io/tester-utils/logger"
 )
 
@@ -53,7 +54,7 @@ func (r stageRunner) getLoggerForStage(isDebug bool, stage Stage) *logger.Logger
 }
 
 // Run runs all tests in a stageRunner
-func (r stageRunner) Run(isDebug bool, executable *Executable) bool {
+func (r stageRunner) Run(isDebug bool, executable *executable.Executable) bool {
 	for _, stage := range r.stages {
 		if stage.Slug != r.stages[0].Slug {
 			fmt.Println("")
