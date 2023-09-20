@@ -22,9 +22,9 @@ func buildTestCasesJson(slugs []string) string {
 
 	for index, slug := range slugs {
 		testCases = append(testCases, map[string]string{
-			"slug":            slug,
-			"test_log_prefix": fmt.Sprintf("test-%d", index+1),
-			"title":           fmt.Sprintf("Stage #%d: %s", index+1, slug),
+			"slug":              slug,
+			"tester_log_prefix": fmt.Sprintf("test-%d", index+1),
+			"title":             fmt.Sprintf("Stage #%d: %s", index+1, slug),
 		})
 	}
 
