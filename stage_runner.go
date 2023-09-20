@@ -8,9 +8,8 @@ import (
 
 // stageRunner is used to run multiple stages
 type stageRunner struct {
-	isQuiet         bool // Used for anti-cheat tests, where we only want Critical logs to be emitted
-	isForFirstStage bool // We emit friendlier logs on test failures for the first stage
-	stages          []Stage
+	isQuiet bool // Used for anti-cheat tests, where we only want Critical logs to be emitted
+	stages  []Stage
 }
 
 // Stage represents a stage in a challenge.
@@ -33,10 +32,9 @@ func (s Stage) CustomOrDefaultTimeout() time.Duration {
 	}
 }
 
-func newStageRunner(stages []Stage, isForFirstStage bool) stageRunner {
+func newStageRunner(stages []Stage) stageRunner {
 	return stageRunner{
-		isForFirstStage: isForFirstStage,
-		stages:          stages,
+		stages: stages,
 	}
 }
 
@@ -121,8 +119,7 @@ func (r stageRunner) ForStage(stageSlug string) stageRunner {
 
 	if !currentStage.ShouldRunPreviousStages {
 		return stageRunner{
-			isForFirstStage: r.isForFirstStage,
-			stages:          []Stage{currentStage},
+			stages: []Stage{currentStage},
 		}
 	}
 
@@ -135,7 +132,7 @@ func (r stageRunner) Truncated(stageSlug string) stageRunner {
 	for _, stage := range r.stages {
 		newStages = append(newStages, stage)
 		if stage.Slug == stageSlug {
-			return stageRunner{isForFirstStage: r.isForFirstStage, stages: newStages}
+			return stageRunner{stages: newStages}
 		}
 	}
 
@@ -145,8 +142,7 @@ func (r stageRunner) Truncated(stageSlug string) stageRunner {
 // Randomized returns a stage runner that has stages randomized
 func (r stageRunner) Randomized() stageRunner {
 	return stageRunner{
-		isForFirstStage: r.isForFirstStage,
-		stages:          shuffleStages(r.stages),
+		stages: shuffleStages(r.stages),
 	}
 }
 
@@ -171,10 +167,7 @@ func shuffleStages(stages []Stage) []Stage {
 func (r stageRunner) reportTestError(err error, isDebug bool, logger *Logger) {
 	logger.Errorf("%s", err)
 
-	if r.isForFirstStage {
-		logger.Errorf("Test failed " +
-			"(see README.md for instructions on how to pass this stage)")
-	} else if isDebug {
+	if isDebug {
 		logger.Errorf("Test failed")
 	} else {
 		logger.Errorf("Test failed " +
