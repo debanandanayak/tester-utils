@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-var randInstance = rand.New(rand.NewSource(time.Now().UnixNano()))
-
 var randomWords = []string{
 	"apple",
 	"orange",
@@ -33,15 +31,15 @@ func Init() {
 			panic(err)
 		}
 
-		randInstance.Seed(int64(seedInt))
+		rand.Seed(int64(seedInt))
 	} else {
-		randInstance.Seed(time.Now().UnixNano())
+		rand.Seed(time.Now().UnixNano())
 	}
 }
 
 // RandomWord returns a random word from the list of words.
 func RandomWord() string {
-	return randomWords[randInstance.Intn(len(randomWords))]
+	return randomWords[rand.Intn(len(randomWords))]
 }
 
 // RandomWords returns a random list of n words.
@@ -72,7 +70,7 @@ func shuffle(vals []string, n int) []string {
 
 	ret := make([]string, n)
 
-	for i, randIndex := range randInstance.Perm(len(vals))[:n] {
+	for i, randIndex := range rand.Perm(len(vals))[:n] {
 		ret[i] = vals[randIndex]
 	}
 
