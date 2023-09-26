@@ -108,9 +108,9 @@ func runCLIStage(testerDefinition tester_utils.TesterDefinition, testCasesJson s
 	}
 
 	tester, err := tester_utils.NewTester(map[string]string{
-		"CODECRAFTERS_TEST_CASES_JSON":               testCasesJson,
-		"CODECRAFTERS_SUBMISSION_DIR":                path,
-		"CODECRAFTERS_DISABLE_ANTI_CHEAT_TEST_CASES": "true",
+		"CODECRAFTERS_TEST_CASES_JSON": testCasesJson,
+		"CODECRAFTERS_SUBMISSION_DIR":  path,
+		"CODECRAFTERS_SKIP_ANTI_CHEAT": "true",
 	}, testerDefinition)
 
 	if err != nil {
