@@ -2,6 +2,7 @@ package tester_utils
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/codecrafters-io/tester-utils/executable"
 	"github.com/codecrafters-io/tester-utils/logger"
@@ -64,8 +65,10 @@ func (tester Tester) RunCLI() int {
 		return 1
 	}
 
-	if !tester.RunAntiCheatStages() {
-		return 1
+	if os.Getenv("CODECRAFTERS_DISABLE_ANTI_CHEAT_TEST_CASES") != "true" {
+		if !tester.RunAntiCheatStages() {
+			return 1
+		}
 	}
 
 	return 0
