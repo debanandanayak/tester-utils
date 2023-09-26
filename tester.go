@@ -5,6 +5,7 @@ import (
 
 	"github.com/codecrafters-io/tester-utils/executable"
 	"github.com/codecrafters-io/tester-utils/logger"
+	"github.com/codecrafters-io/tester-utils/random"
 	"github.com/codecrafters-io/tester-utils/tester_context"
 )
 
@@ -56,6 +57,7 @@ func (tester Tester) RunStages() bool {
 
 // RunCLI executes the tester based on user-provided env vars
 func (tester Tester) RunCLI() int {
+	random.Init()
 	tester.PrintDebugContext()
 
 	// Validate context?
@@ -64,7 +66,7 @@ func (tester Tester) RunCLI() int {
 		return 1
 	}
 
-	if !tester.RunAntiCheatStages() {
+	if !tester.context.ShouldSkipAntiCheatTestCases && !tester.RunAntiCheatStages() {
 		return 1
 	}
 

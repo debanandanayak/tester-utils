@@ -23,9 +23,10 @@ type TesterContextTestCase struct {
 
 // TesterContext holds all flags passed in via environment variables, or from the codecrafters.yml file
 type TesterContext struct {
-	ExecutablePath string
-	IsDebug        bool
-	TestCases      []TesterContextTestCase
+	ExecutablePath               string
+	IsDebug                      bool
+	TestCases                    []TesterContextTestCase
+	ShouldSkipAntiCheatTestCases bool
 }
 
 type yamlConfig struct {
@@ -51,6 +52,13 @@ func GetTesterContext(env map[string]string, executableFileName string) (TesterC
 	testCases := []TesterContextTestCase{}
 	if err := json.Unmarshal([]byte(testCasesJson), &testCases); err != nil {
 		return TesterContext{}, fmt.Errorf("failed to parse CODECRAFTERS_TEST_CASES_JSON: %s", err)
+	}
+
+	var shouldSkipAntiCheatTestCases = false
+
+	skipAntiCheatValue, ok := env["CODECRAFTERS_SKIP_ANTI_CHEAT"]
+	if ok && skipAntiCheatValue == "true" {
+		shouldSkipAntiCheatTestCases = true
 	}
 
 	for _, testCase := range testCases {
@@ -82,9 +90,10 @@ func GetTesterContext(env map[string]string, executableFileName string) (TesterC
 	// TODO: test if executable exists?
 
 	return TesterContext{
-		ExecutablePath: executablePath,
-		IsDebug:        yamlConfig.Debug,
-		TestCases:      testCases,
+		ExecutablePath:               executablePath,
+		IsDebug:                      yamlConfig.Debug,
+		TestCases:                    testCases,
+		ShouldSkipAntiCheatTestCases: shouldSkipAntiCheatTestCases,
 	}, nil
 }
 
