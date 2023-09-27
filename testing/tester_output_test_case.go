@@ -48,13 +48,19 @@ func buildTestCasesJson(slugs []string) string {
 
 func buildTestCasesJsonUntilStageSlug(untilStageSlug string, testerDefinition tester_utils.TesterDefinition) string {
 	stageSlugs := []string{}
+	foundStageSlug := false
 
 	for _, testCase := range testerDefinition.TestCases {
 		stageSlugs = append(stageSlugs, testCase.Slug)
 
 		if testCase.Slug == untilStageSlug {
+			foundStageSlug = true
 			break
 		}
+	}
+
+	if !foundStageSlug {
+		panic(fmt.Sprintf("Stage slug %s not found", untilStageSlug))
 	}
 
 	return buildTestCasesJson(stageSlugs)
