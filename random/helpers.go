@@ -37,6 +37,11 @@ func Init() {
 	}
 }
 
+// RandomInt returns a random integer between min and max.
+func RandomInt(min, max int) int {
+	return rand.Intn(max-min) + min
+}
+
 // RandomWord returns a random word from the list of words.
 func RandomWord() string {
 	return randomWords[rand.Intn(len(randomWords))]
