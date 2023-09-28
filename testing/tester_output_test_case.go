@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"testing"
 
 	tester_utils "github.com/codecrafters-io/tester-utils"
@@ -20,6 +21,9 @@ type TesterOutputTestCase struct {
 
 	// UntilStageSlug is the slug of the stage that we want to test until. Either this or StageSlug must be provided.
 	UntilStageSlug string
+
+	// SkipAntiCheat is a flag that indicates whether we want to skip the anti-cheat check.
+	SkipAntiCheat bool
 
 	// StageSlugs is the list of stages that we want to test. Either this or UntilStageSlug must be provided.
 	StageSlugs []string
@@ -90,7 +94,7 @@ func TestTesterOutput(t *testing.T, testerDefinition tester_utils.TesterDefiniti
 				testCasesJson = buildTestCasesJson(testCase.StageSlugs)
 			}
 
-			exitCode := runCLIStage(testerDefinition, testCasesJson, testCase.CodePath)
+			exitCode := runCLIStage(testerDefinition, testCasesJson, testCase.CodePath, testCase.SkipAntiCheat)
 			if !assert.Equal(t, testCase.ExpectedExitCode, exitCode) {
 				failWithMockerOutput(t, m)
 			}
@@ -106,7 +110,7 @@ func TestTesterOutput(t *testing.T, testerDefinition tester_utils.TesterDefiniti
 //	return re.ReplaceAll(testerOutput, []byte("read tcp 127.0.0.1:xxxxx+->127.0.0.1:6379: read: connection reset by peer"))
 //}
 
-func runCLIStage(testerDefinition tester_utils.TesterDefinition, testCasesJson string, relativePath string) (exitCode int) {
+func runCLIStage(testerDefinition tester_utils.TesterDefinition, testCasesJson string, relativePath string, skipAntiCheat bool) (exitCode int) {
 	// When a command is run with a different working directory, a relative path can cause problems.
 	path, err := filepath.Abs(relativePath)
 	if err != nil {
@@ -116,7 +120,7 @@ func runCLIStage(testerDefinition tester_utils.TesterDefinition, testCasesJson s
 	tester, err := tester_utils.NewTester(map[string]string{
 		"CODECRAFTERS_TEST_CASES_JSON": testCasesJson,
 		"CODECRAFTERS_SUBMISSION_DIR":  path,
-		"CODECRAFTERS_SKIP_ANTI_CHEAT": "true",
+		"CODECRAFTERS_SKIP_ANTI_CHEAT": strconv.FormatBool(skipAntiCheat),
 	}, testerDefinition)
 
 	if err != nil {
