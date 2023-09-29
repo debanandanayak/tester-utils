@@ -23,7 +23,7 @@ type TesterOutputTestCase struct {
 	UntilStageSlug string
 
 	// SkipAntiCheat is a flag that indicates whether we want to skip the anti-cheat check.
-	SkipAntiCheat bool
+	SkipAntiCheat *bool
 
 	// StageSlugs is the list of stages that we want to test. Either this or UntilStageSlug must be provided.
 	StageSlugs []string
@@ -78,6 +78,11 @@ func TestTesterOutput(t *testing.T, testerDefinition tester_utils.TesterDefiniti
 		t.Run(testName, func(t *testing.T) {
 			m.Start()
 
+			skipAntiCheat := true
+			if testCase.SkipAntiCheat != nil {
+				skipAntiCheat = *testCase.SkipAntiCheat
+			}
+
 			if testCase.UntilStageSlug != "" && testCase.StageSlugs != nil && len(testCase.StageSlugs) > 0 {
 				t.Fatal("Either UntilStageSlug or StageSlugs must be provided, not both")
 			}
@@ -94,7 +99,7 @@ func TestTesterOutput(t *testing.T, testerDefinition tester_utils.TesterDefiniti
 				testCasesJson = buildTestCasesJson(testCase.StageSlugs)
 			}
 
-			exitCode := runCLIStage(testerDefinition, testCasesJson, testCase.CodePath, testCase.SkipAntiCheat)
+			exitCode := runCLIStage(testerDefinition, testCasesJson, testCase.CodePath, skipAntiCheat)
 			if !assert.Equal(t, testCase.ExpectedExitCode, exitCode) {
 				failWithMockerOutput(t, m)
 			}
