@@ -35,54 +35,54 @@ func VisualizeByteDiff(actual []byte, expected []byte) []string {
 		}
 	}
 
-	byteCountToDisplay := 20
-	byteRangeStart := intmax(0, firstDiffIndex-(byteCountToDisplay/2))
-	byteRangeEnd := byteRangeStart + byteCountToDisplay
+	totalByteCountToDisplay := 100
+	byteCountPerLine := 20
+	byteRangeStart := intmax(0, firstDiffIndex-(totalByteCountToDisplay/2))
+	byteRangeEnd := intmin(byteRangeStart+totalByteCountToDisplay, intmax(len(actual), len(expected)))
 
 	linesBuffer := bytes.NewBuffer([]byte{})
 	tabWriter := tabwriter.NewWriter(linesBuffer, 20, 0, 1, ' ', tabwriter.Debug)
 
-	tabWriter.Write([]byte(fmt.Sprintf("Expected (bytes %v-%v), hexadecimal:\t Printable characters:\n", byteRangeStart, byteRangeEnd)))
-	tabWriter.Write([]byte(fmt.Sprintf("%v\t %v\n", formatBytesAsHex(expected[byteRangeStart:intmin(byteRangeEnd, len(expected))], byteCountToDisplay), formatBytesAsAscii(expected[byteRangeStart:intmin(byteRangeEnd, len(expected))], byteCountToDisplay))))
+	tabWriter.Write([]byte(fmt.Sprintf("Expected (bytes %v-%v), hexadecimal:       \t Printable characters:\n", byteRangeStart, byteRangeEnd)))
+
+	for i := byteRangeStart; i < intmin(byteRangeEnd, len(expected)); i += byteCountPerLine {
+		end := intmin(i+byteCountPerLine, len(expected))
+		tabWriter.Write([]byte(fmt.Sprintf("%v\t %v\n", formatBytesAsHex(expected[i:end]), formatBytesAsAscii(expected[i:end]))))
+	}
+
 	tabWriter.Write([]byte("\n"))
-	tabWriter.Write([]byte(fmt.Sprintf("Actual (bytes %v-%v), hexadecimal:\t Printable characters:\n", byteRangeStart, byteRangeEnd)))
-	tabWriter.Write([]byte(fmt.Sprintf("%v\t %v\n", formatBytesAsHex(actual[byteRangeStart:intmin(byteRangeEnd, len(actual))], byteCountToDisplay), formatBytesAsAscii(actual[byteRangeStart:intmin(byteRangeEnd, len(actual))], byteCountToDisplay))))
+	tabWriter.Write([]byte(fmt.Sprintf("Actual (bytes %v-%v), hexadecimal:         \t Printable characters:\n", byteRangeStart, byteRangeEnd)))
+
+	for i := byteRangeStart; i < intmin(byteRangeEnd, len(actual)); i += byteCountPerLine {
+		end := intmin(i+byteCountPerLine, len(actual))
+		tabWriter.Write([]byte(fmt.Sprintf("%v\t %v\n", formatBytesAsHex(actual[i:end]), formatBytesAsAscii(actual[i:end]))))
+	}
+
 	tabWriter.Flush()
 
 	return strings.Split(string(linesBuffer.Bytes()), "\n")
 }
 
-func formatBytesAsHexAndAscii(value []byte, expectedCount int) string {
-	return fmt.Sprintf("%v | %v", formatBytesAsHex(value, expectedCount), formatBytesAsAscii(value, expectedCount))
-}
-
-func formatBytesAsAscii(value []byte, expectedCount int) string {
+func formatBytesAsAscii(value []byte) string {
 	var asciiRepresentations []string
 
-	for i := 0; i < expectedCount; i++ {
-		if i >= len(value) {
-			// Pad with spaces if we're out of bytes
-			asciiRepresentations = append(asciiRepresentations, " ")
-		} else if value[i] < 32 || value[i] > 126 {
+	for _, b := range value {
+		if b < 32 || b > 126 {
 			// If the byte is not printable, replace it with a dot
 			asciiRepresentations = append(asciiRepresentations, ".")
 		} else {
-			asciiRepresentations = append(asciiRepresentations, string(value[i]))
+			asciiRepresentations = append(asciiRepresentations, string(b))
 		}
 	}
 
 	return strings.Join(asciiRepresentations, "")
 }
 
-func formatBytesAsHex(value []byte, expectedCount int) string {
+func formatBytesAsHex(value []byte) string {
 	var hexadecimalRepresentations []string
 
-	for i := 0; i < expectedCount; i++ {
-		if i >= len(value) {
-			hexadecimalRepresentations = append(hexadecimalRepresentations, "  ")
-		} else {
-			hexadecimalRepresentations = append(hexadecimalRepresentations, fmt.Sprintf("%02x", value[i]))
-		}
+	for _, b := range value {
+		hexadecimalRepresentations = append(hexadecimalRepresentations, fmt.Sprintf("%02x", b))
 	}
 
 	return strings.Join(hexadecimalRepresentations, " ")
