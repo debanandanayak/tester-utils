@@ -17,10 +17,10 @@ func TestVisualizeByteDiffWorksWithStrings(t *testing.T) {
 	}
 
 	expectedLines := []string{
-		"Expected (bytes 0-13), hexadecimal:        | Printable characters:",
+		"Expected (bytes 0-13), hexadecimal:        | ASCII:",
 		"48 65 6c 6c 6f 2c 20 47 6f 21              | Hello, Go!",
 		"",
-		"Actual (bytes 0-13), hexadecimal:          | Printable characters:",
+		"Actual (bytes 0-13), hexadecimal:          | ASCII:",
 		"48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21     | Hello, World!",
 	}
 
@@ -46,10 +46,10 @@ func TestVisualizeByteDiffWorksWithNonPrintableCharacters(t *testing.T) {
 	}
 
 	expectedLines := []string{
-		"Expected (bytes 0-12), hexadecimal:        | Printable characters:",
+		"Expected (bytes 0-12), hexadecimal:        | ASCII:",
 		"62 6c 6f 62 00 00 68 65 61 64 65 72        | blob..header",
 		"",
-		"Actual (bytes 0-12), hexadecimal:          | Printable characters:",
+		"Actual (bytes 0-12), hexadecimal:          | ASCII:",
 		"62 6c 6f 62 00 68 65 61 64 65 72           | blob.header",
 	}
 
@@ -75,11 +75,11 @@ func TestVisualizeByteDiffWorksWithLongerSequences(t *testing.T) {
 	}
 
 	expectedLines := []string{
-		"Expected (bytes 0-32), hexadecimal:                         | Printable characters:",
+		"Expected (bytes 0-32), hexadecimal:                         | ASCII:",
 		"31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 37 38 39 30 31 | 12345678901234578901",
 		"32 33 34 35 37 38 39 30 61 62 63 64                         | 23457890abcd",
 		"",
-		"Actual (bytes 0-32), hexadecimal:                           | Printable characters:",
+		"Actual (bytes 0-32), hexadecimal:                           | ASCII:",
 		"31 32 33 34 35 36 37 38 39 30 31 32 33 34 35 37 38 39 30 31 | 12345678901234578901",
 		"32 33 34 35 37 38 39 30 65 66 67 68                         | 23457890efgh",
 	}
