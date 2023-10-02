@@ -60,7 +60,11 @@ func VisualizeByteDiff(actual []byte, expected []byte) []string {
 
 	tabWriter.Flush()
 
-	return strings.Split(string(linesBuffer.Bytes()), "\n")
+	output := string(linesBuffer.Bytes())
+	if output[len(output)-1] == '\n' {
+		output = output[:len(output)-1]
+	}
+	return strings.Split(output, "\n")
 }
 
 func formatBytesAsAscii(value []byte) string {

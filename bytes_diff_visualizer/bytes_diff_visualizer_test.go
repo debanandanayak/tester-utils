@@ -33,6 +33,8 @@ func TestVisualizeByteDiffWorksWithStrings(t *testing.T) {
 			t.FailNow()
 		}
 	}
+
+	assert.Equal(t, len(expectedLines), len(result))
 }
 
 func TestVisualizeByteDiffWorksWithNonPrintableCharacters(t *testing.T) {
@@ -40,10 +42,6 @@ func TestVisualizeByteDiffWorksWithNonPrintableCharacters(t *testing.T) {
 	expected := []byte("blob\000\000header") // Has an extra null byte
 
 	result := VisualizeByteDiff(actual, expected)
-
-	if len(result) == 0 {
-		t.Errorf("Expected a non-empty result")
-	}
 
 	expectedLines := []string{
 		"Expected (bytes 0-12), hexadecimal:        | ASCII:",
@@ -62,6 +60,8 @@ func TestVisualizeByteDiffWorksWithNonPrintableCharacters(t *testing.T) {
 			t.FailNow()
 		}
 	}
+
+	assert.Equal(t, len(expectedLines), len(result))
 }
 
 func TestVisualizeByteDiffWorksWithLongerSequences(t *testing.T) {
@@ -93,4 +93,6 @@ func TestVisualizeByteDiffWorksWithLongerSequences(t *testing.T) {
 			t.FailNow()
 		}
 	}
+
+	assert.Equal(t, len(expectedLines), len(result))
 }
