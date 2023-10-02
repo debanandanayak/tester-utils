@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
+	"text/tabwriter"
 )
 
 // VisualizeByteDiff visualizes the difference between two byte slices, returning lines to be presented to the user.
@@ -38,16 +39,17 @@ func VisualizeByteDiff(actual []byte, expected []byte) []string {
 	byteRangeStart := intmax(0, firstDiffIndex-(byteCountToDisplay/2))
 	byteRangeEnd := byteRangeStart + byteCountToDisplay
 
-	var lines []string
+	linesBuffer := bytes.NewBuffer([]byte{})
+	tabWriter := tabwriter.NewWriter(linesBuffer, 20, 0, 1, ' ', tabwriter.Debug)
 
-	lines = append(lines, fmt.Sprintf("Expected (bytes %v-%v), hexadecimal:                         | Printable characters:", byteRangeStart, byteRangeEnd))
-	lines = append(lines, formatBytesAsHexAndAscii(expected[byteRangeStart:intmin(byteRangeEnd, len(expected))], byteCountToDisplay))
-	lines = append(lines, "")
+	tabWriter.Write([]byte(fmt.Sprintf("Expected (bytes %v-%v), hexadecimal:\t Printable characters:\n", byteRangeStart, byteRangeEnd)))
+	tabWriter.Write([]byte(fmt.Sprintf("%v\t %v\n", formatBytesAsHex(expected[byteRangeStart:intmin(byteRangeEnd, len(expected))], byteCountToDisplay), formatBytesAsAscii(expected[byteRangeStart:intmin(byteRangeEnd, len(expected))], byteCountToDisplay))))
+	tabWriter.Write([]byte("\n"))
+	tabWriter.Write([]byte(fmt.Sprintf("Actual (bytes %v-%v), hexadecimal:\t Printable characters:\n", byteRangeStart, byteRangeEnd)))
+	tabWriter.Write([]byte(fmt.Sprintf("%v\t %v\n", formatBytesAsHex(actual[byteRangeStart:intmin(byteRangeEnd, len(actual))], byteCountToDisplay), formatBytesAsAscii(actual[byteRangeStart:intmin(byteRangeEnd, len(actual))], byteCountToDisplay))))
+	tabWriter.Flush()
 
-	lines = append(lines, fmt.Sprintf("Actual (bytes %v-%v), hexadecimal:                           | Printable characters:", byteRangeStart, byteRangeEnd))
-	lines = append(lines, formatBytesAsHexAndAscii(actual[byteRangeStart:intmin(byteRangeEnd, len(actual))], byteCountToDisplay))
-
-	return lines
+	return strings.Split(string(linesBuffer.Bytes()), "\n")
 }
 
 func formatBytesAsHexAndAscii(value []byte, expectedCount int) string {
