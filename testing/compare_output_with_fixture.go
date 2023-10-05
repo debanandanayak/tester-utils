@@ -36,10 +36,10 @@ func CompareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutput
 		panic(err)
 	}
 
-	testerOutput = normalizeOutputFunc(testerOutput)
-	fixtureContents = normalizeOutputFunc(fixtureContents)
+	normalizedTesterOutput := normalizeOutputFunc(testerOutput)
+	normalizedFixturesContents := normalizeOutputFunc(fixtureContents)
 
-	if bytes.Compare(testerOutput, fixtureContents) != 0 {
+	if bytes.Compare(normalizedTesterOutput, normalizedFixturesContents) != 0 {
 		diffExecutablePath, err := exec.LookPath("diff")
 		if err != nil {
 			panic(err)
@@ -47,16 +47,25 @@ func CompareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutput
 
 		diffExecutable := executable.NewExecutable(diffExecutablePath)
 
-		tmpFile, err := ioutil.TempFile("", "")
+		testerOutputTmpFile, err := ioutil.TempFile("", "")
 		if err != nil {
 			panic(err)
 		}
 
-		if _, err = tmpFile.Write(testerOutput); err != nil {
+		if _, err = testerOutputTmpFile.Write(normalizedTesterOutput); err != nil {
 			panic(err)
 		}
 
-		result, err := diffExecutable.Run("-u", fixturePath, tmpFile.Name())
+		fixtureTmpFile, err := ioutil.TempFile("", "")
+		if err != nil {
+			panic(err)
+		}
+
+		if _, err = fixtureTmpFile.Write(normalizedFixturesContents); err != nil {
+			panic(err)
+		}
+
+		result, err := diffExecutable.Run("-u", fixtureTmpFile.Name(), testerOutputTmpFile.Name())
 		if err != nil {
 			panic(err)
 		}
