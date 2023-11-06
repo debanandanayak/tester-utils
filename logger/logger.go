@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -9,11 +10,12 @@ import (
 )
 
 func colorize(colorToUse color.Attribute, fstring string, args ...interface{}) []string {
-	lines := strings.Split(fstring, "\n")
+	msg := fmt.Sprintf(fstring, args...)
+	lines := strings.Split(msg, "\n")
 	colorizedLines := make([]string, len(lines))
 
 	for i, line := range lines {
-		colorizedLines[i] = color.New(colorToUse).SprintfFunc()(line, args...)
+		colorizedLines[i] = color.New(colorToUse).SprintFunc()(line)
 	}
 
 	return colorizedLines
