@@ -81,8 +81,10 @@ func (l *Logger) Successf(fstring string, args ...interface{}) {
 	if l.IsQuiet {
 		return
 	}
-	msg := successColorize(fstring, args...)
-	l.Successln(msg)
+
+	for _, line := range successColorize(fstring, args...) {
+		l.logger.Println(line)
+	}
 }
 
 func (l *Logger) Successln(msg string) {
