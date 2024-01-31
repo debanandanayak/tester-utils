@@ -41,3 +41,7 @@ func (s StageHarness) RunTeardownFuncs() {
 		teardownFunc()
 	}
 }
+
+func (s *StageHarness) NewExecutable() *executable.Executable {
+	return executable.NewExecutable(s.Executable.Path())
+}
