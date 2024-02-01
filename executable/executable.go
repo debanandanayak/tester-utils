@@ -74,11 +74,6 @@ func (e *Executable) Clone() *Executable {
 	}
 }
 
-// Getter for Path
-func (e *Executable) Path() string {
-	return e.path
-}
-
 // NewExecutable returns an Executable
 func NewExecutable(path string) *Executable {
 	return &Executable{path: path, timeoutInSecs: 10, loggerFunc: nullLogger}
