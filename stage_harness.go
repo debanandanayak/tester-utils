@@ -43,5 +43,5 @@ func (s StageHarness) RunTeardownFuncs() {
 }
 
 func (s *StageHarness) NewExecutable() *executable.Executable {
-	return executable.NewExecutable(s.Executable.Path())
+	return s.Executable.Clone()
 }

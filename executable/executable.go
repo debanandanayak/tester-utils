@@ -65,6 +65,15 @@ func nullLogger(msg string) {
 	return
 }
 
+func (e *Executable) Clone() *Executable {
+	return &Executable{
+		path:          e.path,
+		timeoutInSecs: e.timeoutInSecs,
+		loggerFunc:    e.loggerFunc,
+		WorkingDir:    e.WorkingDir,
+	}
+}
+
 // Getter for Path
 func (e *Executable) Path() string {
 	return e.path
