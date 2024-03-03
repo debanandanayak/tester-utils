@@ -110,11 +110,6 @@ func TestTesterOutput(t *testing.T, testerDefinition tester_utils.TesterDefiniti
 	}
 }
 
-//func normalizeTesterOutput(testerOutput []byte) []byte {
-//	re, _ := regexp.Compile("read tcp 127.0.0.1:\\d+->127.0.0.1:6379: read: connection reset by peer")
-//	return re.ReplaceAll(testerOutput, []byte("read tcp 127.0.0.1:xxxxx+->127.0.0.1:6379: read: connection reset by peer"))
-//}
-
 func runCLIStage(testerDefinition tester_utils.TesterDefinition, testCasesJson string, relativePath string, skipAntiCheat bool) (exitCode int) {
 	// When a command is run with a different working directory, a relative path can cause problems.
 	path, err := filepath.Abs(relativePath)
