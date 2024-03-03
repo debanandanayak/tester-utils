@@ -37,14 +37,6 @@ func NewQuietTestRunner(steps []TestRunnerStep) TestRunner {
 	return TestRunner{isQuiet: true, steps: steps}
 }
 
-func (r TestRunner) getLoggerForStep(isDebug bool, step TestRunnerStep) *logger.Logger {
-	if r.isQuiet {
-		return logger.GetQuietLogger("")
-	} else {
-		return logger.GetLogger(isDebug, fmt.Sprintf("[%s] ", step.TesterLogPrefix))
-	}
-}
-
 // Run runs all tests in a stageRunner
 func (r TestRunner) Run(isDebug bool, executable *executable.Executable) bool {
 	for index, step := range r.steps {
@@ -92,14 +84,14 @@ func (r TestRunner) Run(isDebug bool, executable *executable.Executable) bool {
 	return true
 }
 
-// Fuck you, go
-func min(a, b int) int {
-	if a < b {
-		return a
+func (r TestRunner) getLoggerForStep(isDebug bool, step TestRunnerStep) *logger.Logger {
+	if r.isQuiet {
+		return logger.GetQuietLogger("")
+	} else {
+		return logger.GetLogger(isDebug, fmt.Sprintf("[%s] ", step.TesterLogPrefix))
 	}
-
-	return b
 }
+
 
 func (r TestRunner) reportTestError(err error, isDebug bool, logger *logger.Logger) {
 	logger.Errorf("%s", err)
@@ -110,4 +102,13 @@ func (r TestRunner) reportTestError(err error, isDebug bool, logger *logger.Logg
 		logger.Errorf("Test failed " +
 			"(try setting 'debug: true' in your codecrafters.yml to see more details)")
 	}
+}
+
+// Fuck you, go
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+
+	return b
 }
