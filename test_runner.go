@@ -31,7 +31,7 @@ func newTestRunner(steps []testRunnerStep) testRunner {
 	}
 }
 
-func newQuietStageRunner(steps []testRunnerStep) testRunner {
+func newQuietTestRunner(steps []testRunnerStep) testRunner {
 	return testRunner{isQuiet: true, steps: steps}
 }
 
