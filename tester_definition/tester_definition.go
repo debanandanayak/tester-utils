@@ -1,7 +1,9 @@
-package tester_utils
+package tester_definition
 
 import (
 	"time"
+
+	"github.com/codecrafters-io/tester-utils/test_case_harness"
 )
 
 // TestCase represents a test case that'll be run against the user's code.
@@ -14,7 +16,7 @@ type TestCase struct {
 	Slug string
 
 	// TestFunc is the function that'll be run against the user's code.
-	TestFunc func(stageHarness *StageHarness) error
+	TestFunc func(testCaseHarness *test_case_harness.TestCaseHarness) error
 
 	// Timeout is the maximum amount of time that the test case can run for.
 	Timeout time.Duration

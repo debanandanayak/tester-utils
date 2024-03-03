@@ -1,27 +1,27 @@
-package tester_utils
+package test_case_harness
 
 import (
 	"github.com/codecrafters-io/tester-utils/executable"
 	"github.com/codecrafters-io/tester-utils/logger"
 )
 
-// StageHarness is passed to your Stage's TestFunc.
+// TestCaseHarness is passed to your TestCase's TestFunc.
 //
 // If the program is a long-lived program that must be alive during the duration of the test (like a Redis server),
 // do something like this at the start of your test function:
 //
-//	if err := stageHarness.Executable.Start(); err != nil {
+//	if err := harness.Executable.Start(); err != nil {
 //	   return err
 //	}
-//	stageHarness.RegisterTeardownFunc(func() { stageHarness.Executable.Kill() })
+//	harness.RegisterTeardownFunc(func() { harness.Executable.Kill() })
 //
 // If the program is a script that must be executed and then checked for output (like a Git command), use it like this:
 //
-//	result, err := stageHarness.Executable.Run("cat-file", "-p", "sha")
+//	result, err := harness.Executable.Run("cat-file", "-p", "sha")
 //	if err != nil {
 //	    return err
 //	 }
-type StageHarness struct {
+type TestCaseHarness struct {
 	// Logger is to be used for all logs generated from the test function.
 	Logger *logger.Logger
 
@@ -32,16 +32,16 @@ type StageHarness struct {
 	teardownFuncs []func()
 }
 
-func (s *StageHarness) RegisterTeardownFunc(teardownFunc func()) {
+func (s *TestCaseHarness) RegisterTeardownFunc(teardownFunc func()) {
 	s.teardownFuncs = append(s.teardownFuncs, teardownFunc)
 }
 
-func (s StageHarness) RunTeardownFuncs() {
+func (s *TestCaseHarness) RunTeardownFuncs() {
 	for _, teardownFunc := range s.teardownFuncs {
 		teardownFunc()
 	}
 }
 
-func (s *StageHarness) NewExecutable() *executable.Executable {
+func (s *TestCaseHarness) NewExecutable() *executable.Executable {
 	return s.Executable.Clone()
 }

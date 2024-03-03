@@ -6,14 +6,16 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/codecrafters-io/tester-utils/test_case_harness"
+	"github.com/codecrafters-io/tester-utils/tester_definition"
 	"github.com/stretchr/testify/assert"
 )
 
-func passFunc(stageHarness *StageHarness) error {
+func passFunc(harness *test_case_harness.TestCaseHarness) error {
 	return nil
 }
 
-func failFunc(stageHarness *StageHarness) error {
+func failFunc(harness *test_case_harness.TestCaseHarness) error {
 	return errors.New("fail")
 }
 
@@ -32,7 +34,7 @@ func buildTestCasesJson(slugs []string) string {
 	return string(testCasesJson)
 }
 
-func buildTester(t *testing.T, definition TesterDefinition, testCasesJson string) Tester {
+func buildTester(t *testing.T, definition tester_definition.TesterDefinition, testCasesJson string) Tester {
 	tester, err := NewTester(map[string]string{
 		"CODECRAFTERS_SUBMISSION_DIR":  "./test_helpers/valid_app_dir",
 		"CODECRAFTERS_TEST_CASES_JSON": buildTestCasesJson([]string{"test-1", "test-2"}),
@@ -46,8 +48,8 @@ func buildTester(t *testing.T, definition TesterDefinition, testCasesJson string
 }
 
 func TestAllStagesPass(t *testing.T) {
-	definition := TesterDefinition{
-		TestCases: []TestCase{
+	definition := tester_definition.TesterDefinition{
+		TestCases: []tester_definition.TestCase{
 			{Slug: "test-1", TestFunc: passFunc},
 			{Slug: "test-2", TestFunc: passFunc},
 		},
@@ -59,8 +61,8 @@ func TestAllStagesPass(t *testing.T) {
 }
 
 func TestOneStageFails(t *testing.T) {
-	definition := TesterDefinition{
-		TestCases: []TestCase{
+	definition := tester_definition.TesterDefinition{
+		TestCases: []tester_definition.TestCase{
 			{Slug: "test-1", TestFunc: passFunc},
 			{Slug: "test-2", TestFunc: failFunc},
 		},

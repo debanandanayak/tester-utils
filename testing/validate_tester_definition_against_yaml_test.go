@@ -3,15 +3,15 @@ package testing
 import (
 	"testing"
 
-	tester_utils "github.com/codecrafters-io/tester-utils"
+	"github.com/codecrafters-io/tester-utils/tester_definition"
 	"github.com/stretchr/testify/assert"
 
 	testingInterface "github.com/mitchellh/go-testing-interface"
 )
 
 func TestTestAgainstYAMLFailure(t *testing.T) {
-	definition := tester_utils.TesterDefinition{
-		TestCases: []tester_utils.TestCase{
+	definition := tester_definition.TesterDefinition{
+		TestCases: []tester_definition.TestCase{
 			{Slug: "test-1"},
 			{Slug: "test-2"},
 		},
@@ -26,8 +26,8 @@ func TestTestAgainstYAMLFailure(t *testing.T) {
 }
 
 func TestTestAgainstYAMLSuccess(t *testing.T) {
-	definition := tester_utils.TesterDefinition{
-		TestCases: []tester_utils.TestCase{
+	definition := tester_definition.TesterDefinition{
+		TestCases: []tester_definition.TestCase{
 			{Slug: "init"},
 			{Slug: "ping-pong"},
 			{Slug: "ping-pong-multiple"},
