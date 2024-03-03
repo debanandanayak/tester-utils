@@ -1,4 +1,4 @@
-package tester_utils
+package test_runner
 
 import (
 	"fmt"
@@ -7,45 +7,46 @@ import (
 	"github.com/codecrafters-io/tester-utils/executable"
 	"github.com/codecrafters-io/tester-utils/logger"
 	"github.com/codecrafters-io/tester-utils/test_case_harness"
+	"github.com/codecrafters-io/tester-utils/tester_definition"
 )
 
-type testRunnerStep struct {
-	// testCase is the test case that'll be run against the user's code.
-	testCase TestCase
+type TestRunnerStep struct {
+	// TestCase is the test case that'll be run against the user's code.
+	TestCase tester_definition.TestCase
 
-	// testerLogPrefix is the prefix that'll be used for all logs emitted by the tester. Example: "stage-1"
-	testerLogPrefix string
+	// TesterLogPrefix is the prefix that'll be used for all logs emitted by the tester. Example: "stage-1"
+	TesterLogPrefix string
 
-	// title is the title of the test case. Example: "Stage #1: Bind to a port"
-	title string
+	// Title is the title of the test case. Example: "Stage #1: Bind to a port"
+	Title string
 }
 
 // testRunner is used to run multiple tests
-type testRunner struct {
+type TestRunner struct {
 	isQuiet bool // Used for anti-cheat tests, where we only want Critical logs to be emitted
-	steps   []testRunnerStep
+	steps   []TestRunnerStep
 }
 
-func newTestRunner(steps []testRunnerStep) testRunner {
-	return testRunner{
+func NewTestRunner(steps []TestRunnerStep) TestRunner {
+	return TestRunner{
 		steps: steps,
 	}
 }
 
-func newQuietTestRunner(steps []testRunnerStep) testRunner {
-	return testRunner{isQuiet: true, steps: steps}
+func NewQuietTestRunner(steps []TestRunnerStep) TestRunner {
+	return TestRunner{isQuiet: true, steps: steps}
 }
 
-func (r testRunner) getLoggerForStep(isDebug bool, step testRunnerStep) *logger.Logger {
+func (r TestRunner) getLoggerForStep(isDebug bool, step TestRunnerStep) *logger.Logger {
 	if r.isQuiet {
 		return logger.GetQuietLogger("")
 	} else {
-		return logger.GetLogger(isDebug, fmt.Sprintf("[%s] ", step.testerLogPrefix))
+		return logger.GetLogger(isDebug, fmt.Sprintf("[%s] ", step.TesterLogPrefix))
 	}
 }
 
 // Run runs all tests in a stageRunner
-func (r testRunner) Run(isDebug bool, executable *executable.Executable) bool {
+func (r TestRunner) Run(isDebug bool, executable *executable.Executable) bool {
 	for index, step := range r.steps {
 		if index != 0 {
 			fmt.Println("")
@@ -57,15 +58,15 @@ func (r testRunner) Run(isDebug bool, executable *executable.Executable) bool {
 		}
 
 		logger := testCaseHarness.Logger
-		logger.Infof("Running tests for %s", step.title)
+		logger.Infof("Running tests for %s", step.Title)
 
 		stepResultChannel := make(chan error, 1)
 		go func() {
-			err := step.testCase.TestFunc(&testCaseHarness)
+			err := step.TestCase.TestFunc(&testCaseHarness)
 			stepResultChannel <- err
 		}()
 
-		timeout := step.testCase.CustomOrDefaultTimeout()
+		timeout := step.TestCase.CustomOrDefaultTimeout()
 
 		var err error
 		select {
@@ -100,7 +101,7 @@ func min(a, b int) int {
 	return b
 }
 
-func (r testRunner) reportTestError(err error, isDebug bool, logger *logger.Logger) {
+func (r TestRunner) reportTestError(err error, isDebug bool, logger *logger.Logger) {
 	logger.Errorf("%s", err)
 
 	if isDebug {

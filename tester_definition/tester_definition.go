@@ -1,4 +1,4 @@
-package tester_utils
+package tester_definition
 
 import (
 	"time"

@@ -9,6 +9,7 @@ import (
 
 	tester_utils "github.com/codecrafters-io/tester-utils"
 	"github.com/codecrafters-io/tester-utils/stdio_mocker"
+	"github.com/codecrafters-io/tester-utils/tester_definition"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -50,7 +51,7 @@ func buildTestCasesJson(slugs []string) string {
 	return string(testCasesJson)
 }
 
-func buildTestCasesJsonUntilStageSlug(untilStageSlug string, testerDefinition tester_utils.TesterDefinition) string {
+func buildTestCasesJsonUntilStageSlug(untilStageSlug string, testerDefinition tester_definition.TesterDefinition) string {
 	stageSlugs := []string{}
 	foundStageSlug := false
 
@@ -70,7 +71,7 @@ func buildTestCasesJsonUntilStageSlug(untilStageSlug string, testerDefinition te
 	return buildTestCasesJson(stageSlugs)
 }
 
-func TestTesterOutput(t *testing.T, testerDefinition tester_utils.TesterDefinition, testCases map[string]TesterOutputTestCase) {
+func TestTesterOutput(t *testing.T, testerDefinition tester_definition.TesterDefinition, testCases map[string]TesterOutputTestCase) {
 	m := stdio_mocker.NewStdIOMocker()
 	defer m.End()
 
@@ -110,7 +111,7 @@ func TestTesterOutput(t *testing.T, testerDefinition tester_utils.TesterDefiniti
 	}
 }
 
-func runCLIStage(testerDefinition tester_utils.TesterDefinition, testCasesJson string, relativePath string, skipAntiCheat bool) (exitCode int) {
+func runCLIStage(testerDefinition tester_definition.TesterDefinition, testCasesJson string, relativePath string, skipAntiCheat bool) (exitCode int) {
 	// When a command is run with a different working directory, a relative path can cause problems.
 	path, err := filepath.Abs(relativePath)
 	if err != nil {

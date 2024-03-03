@@ -6,16 +6,18 @@ import (
 	"github.com/codecrafters-io/tester-utils/executable"
 	"github.com/codecrafters-io/tester-utils/logger"
 	"github.com/codecrafters-io/tester-utils/random"
+	"github.com/codecrafters-io/tester-utils/test_runner"
 	"github.com/codecrafters-io/tester-utils/tester_context"
+	"github.com/codecrafters-io/tester-utils/tester_definition"
 )
 
 type Tester struct {
 	context    tester_context.TesterContext
-	definition TesterDefinition
+	definition tester_definition.TesterDefinition
 }
 
 // NewTester creates a Tester based on the TesterDefinition provided
-func NewTester(env map[string]string, definition TesterDefinition) (Tester, error) {
+func NewTester(env map[string]string, definition tester_definition.TesterDefinition) (Tester, error) {
 	context, err := tester_context.GetTesterContext(env, definition.ExecutableFileName)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -71,34 +73,34 @@ func (tester Tester) runStages() bool {
 	return tester.getRunner().Run(tester.context.IsDebug, tester.getExecutable())
 }
 
-func (tester Tester) getRunner() testRunner {
-	steps := []testRunnerStep{}
+func (tester Tester) getRunner() test_runner.TestRunner {
+	steps := []test_runner.TestRunnerStep{}
 
 	for _, testerContextTestCase := range tester.context.TestCases {
 		definitionTestCase := tester.definition.TestCaseBySlug(testerContextTestCase.Slug)
 
-		steps = append(steps, testRunnerStep{
-			testCase:        definitionTestCase,
-			testerLogPrefix: testerContextTestCase.TesterLogPrefix,
-			title:           testerContextTestCase.Title,
+		steps = append(steps, test_runner.TestRunnerStep{
+			TestCase:        definitionTestCase,
+			TesterLogPrefix: testerContextTestCase.TesterLogPrefix,
+			Title:           testerContextTestCase.Title,
 		})
 	}
 
-	return newTestRunner(steps)
+	return test_runner.NewTestRunner(steps)
 }
 
-func (tester Tester) getAntiCheatRunner() testRunner {
-	steps := []testRunnerStep{}
+func (tester Tester) getAntiCheatRunner() test_runner.TestRunner {
+	steps := []test_runner.TestRunnerStep{}
 
 	for index, testCase := range tester.definition.AntiCheatTestCases {
-		steps = append(steps, testRunnerStep{
-			testCase:        testCase,
-			testerLogPrefix: fmt.Sprintf("ac-%d", index+1),
-			title:           fmt.Sprintf("AC%d", index+1),
+		steps = append(steps, test_runner.TestRunnerStep{
+			TestCase:        testCase,
+			TesterLogPrefix: fmt.Sprintf("ac-%d", index+1),
+			Title:           fmt.Sprintf("AC%d", index+1),
 		})
 	}
 
-	return newQuietTestRunner(steps) // We only want Critical logs to be emitted for anti-cheat tests
+	return test_runner.NewQuietTestRunner(steps) // We only want Critical logs to be emitted for anti-cheat tests
 }
 
 func (tester Tester) getQuietExecutable() *executable.Executable {
