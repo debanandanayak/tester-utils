@@ -41,6 +41,8 @@ func (tester Tester) RunCLI() int {
 	random.Init()
 	tester.printDebugContext()
 
+	// TODO: Validate context here instead of in NewTester?
+
 	if !tester.runStages() {
 		return 1
 	}
