@@ -34,8 +34,8 @@ func NewTester(env map[string]string, definition TesterDefinition) (Tester, erro
 	return tester, nil
 }
 
+// PrintDebugContext is to be run as early as possible after creating a Tester
 func (tester Tester) PrintDebugContext() {
-	// PrintDebugContext is to be run as early as possible after creating a Tester func (tester Tester) PrintDebugContext() {
 	if !tester.context.IsDebug {
 		return
 	}
