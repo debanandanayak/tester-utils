@@ -86,10 +86,7 @@ func (tester Tester) getRunner() testRunner {
 		})
 	}
 
-	return testRunner{
-		isQuiet: false,
-		steps:   steps,
-	}
+	return newTestRunner(steps)
 }
 
 func (tester Tester) getAntiCheatRunner() testRunner {
@@ -102,10 +99,8 @@ func (tester Tester) getAntiCheatRunner() testRunner {
 			title:           fmt.Sprintf("AC%d", index+1),
 		})
 	}
-	return testRunner{
-		isQuiet: true, // We only want Critical logs to be emitted for anti-cheat tests
-		steps:   steps,
-	}
+
+	return newQuietTestRunner(steps) // We only want Critical logs to be emitted for anti-cheat tests
 }
 
 func (tester Tester) getQuietExecutable() *executable.Executable {
