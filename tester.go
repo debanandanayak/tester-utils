@@ -34,8 +34,24 @@ func NewTester(env map[string]string, definition TesterDefinition) (Tester, erro
 	return tester, nil
 }
 
+// RunCLI executes the tester based on user-provided env vars
+func (tester Tester) RunCLI() int {
+	random.Init()
+	tester.printDebugContext()
+
+	if !tester.runStages() {
+		return 1
+	}
+
+	if !tester.context.ShouldSkipAntiCheatTestCases && !tester.runAntiCheatStages() {
+		return 1
+	}
+
+	return 0
+}
+
 // PrintDebugContext is to be run as early as possible after creating a Tester
-func (tester Tester) PrintDebugContext() {
+func (tester Tester) printDebugContext() {
 	if !tester.context.IsDebug {
 		return
 	}
@@ -44,33 +60,15 @@ func (tester Tester) PrintDebugContext() {
 	fmt.Println("")
 }
 
-// RunAntiCheatStages runs any anti-cheat stages specified in the TesterDefinition. Only critical logs are emitted. If
+// runAntiCheatStages runs any anti-cheat stages specified in the TesterDefinition. Only critical logs are emitted. If
 // the stages pass, the user won't see any visible output.
-func (tester Tester) RunAntiCheatStages() bool {
+func (tester Tester) runAntiCheatStages() bool {
 	return tester.getAntiCheatRunner().Run(false, tester.getQuietExecutable())
 }
 
-// RunStages runs all the stages upto the current stage the user is attempting. Returns true if all stages pass.
-func (tester Tester) RunStages() bool {
+// runStages runs all the stages upto the current stage the user is attempting. Returns true if all stages pass.
+func (tester Tester) runStages() bool {
 	return tester.getRunner().Run(tester.context.IsDebug, tester.getExecutable())
-}
-
-// RunCLI executes the tester based on user-provided env vars
-func (tester Tester) RunCLI() int {
-	random.Init()
-	tester.PrintDebugContext()
-
-	// Validate context?
-
-	if !tester.RunStages() {
-		return 1
-	}
-
-	if !tester.context.ShouldSkipAntiCheatTestCases && !tester.RunAntiCheatStages() {
-		return 1
-	}
-
-	return 0
 }
 
 func (tester Tester) getRunner() testRunner {
