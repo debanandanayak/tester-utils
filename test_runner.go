@@ -6,6 +6,7 @@ import (
 
 	"github.com/codecrafters-io/tester-utils/executable"
 	"github.com/codecrafters-io/tester-utils/logger"
+	"github.com/codecrafters-io/tester-utils/test_case_harness"
 )
 
 type testRunnerStep struct {
@@ -50,17 +51,17 @@ func (r testRunner) Run(isDebug bool, executable *executable.Executable) bool {
 			fmt.Println("")
 		}
 
-		stageHarness := StageHarness{
+		testCaseHarness := test_case_harness.TestCaseHarness{
 			Logger:     r.getLoggerForStep(isDebug, step),
 			Executable: executable,
 		}
 
-		logger := stageHarness.Logger
+		logger := testCaseHarness.Logger
 		logger.Infof("Running tests for %s", step.title)
 
 		stepResultChannel := make(chan error, 1)
 		go func() {
-			err := step.testCase.TestFunc(&stageHarness)
+			err := step.testCase.TestFunc(&testCaseHarness)
 			stepResultChannel <- err
 		}()
 
@@ -80,7 +81,7 @@ func (r testRunner) Run(isDebug bool, executable *executable.Executable) bool {
 			logger.Successf("Test passed.")
 		}
 
-		stageHarness.RunTeardownFuncs()
+		testCaseHarness.RunTeardownFuncs()
 
 		if err != nil {
 			return false

@@ -6,14 +6,15 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/codecrafters-io/tester-utils/test_case_harness"
 	"github.com/stretchr/testify/assert"
 )
 
-func passFunc(stageHarness *StageHarness) error {
+func passFunc(harness *test_case_harness.TestCaseHarness) error {
 	return nil
 }
 
-func failFunc(stageHarness *StageHarness) error {
+func failFunc(harness *test_case_harness.TestCaseHarness) error {
 	return errors.New("fail")
 }
 
