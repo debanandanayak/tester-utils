@@ -1,15 +1,28 @@
 package executable
 
 import (
-	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestStart(t *testing.T) {
 	err := NewExecutable("/blah").Start()
-	assertErrorContains(t, err, "no such file")
+	assertErrorContains(t, err, "not found")
 	assertErrorContains(t, err, "/blah")
+
+	// Permissions are not preserved across remote git repos.
+	_ = removeFileExecutablePermission("./test_helpers/not_executable.sh")
+
+	err = NewExecutable("./test_helpers/not_executable.sh").Start()
+	assertErrorContains(t, err, "not an executable file")
+	assertErrorContains(t, err, "not_executable.sh")
+
+	err = NewExecutable("./test_helpers/haskell").Start()
+	assertErrorContains(t, err, "not an executable file")
+	assertErrorContains(t, err, "haskell")
 
 	err = NewExecutable("./test_helpers/stdout_echo.sh").Start()
 	assert.NoError(t, err)
@@ -17,6 +30,24 @@ func TestStart(t *testing.T) {
 
 func assertErrorContains(t *testing.T, err error, expectedMsg string) {
 	assert.Contains(t, err.Error(), expectedMsg)
+}
+
+func removeFileExecutablePermission(filePath string) error {
+	fileInfo, err := os.Stat(filePath)
+	if err != nil {
+		return err
+	}
+	currentMode := fileInfo.Mode()
+
+	// Clear the executable bits for user, group, and others
+	newMode := currentMode &^ (0111)
+
+	// Update the file mode
+	err = os.Chmod(filePath, newMode)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func TestRun(t *testing.T) {

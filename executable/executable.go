@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"time"
 
 	"io"
@@ -98,6 +100,20 @@ func (e *Executable) Start(args ...string) error {
 
 	if e.isRunning() {
 		return errors.New("process already in progress")
+	}
+
+	absolutePath, err := filepath.Abs(e.path)
+	if err != nil {
+		return fmt.Errorf("Unable to get absolute path of the executable: %w", err)
+	}
+	fileInfo, err := os.Stat(absolutePath)
+	if err != nil {
+		return fmt.Errorf("%s not found", e.path)
+	}
+
+	// Check executable permission
+	if fileInfo.Mode().Perm()&0111 == 0 || fileInfo.IsDir() {
+		return fmt.Errorf("%s is not an executable file", e.path)
 	}
 
 	// TODO: Use timeout!
@@ -234,10 +250,14 @@ func (e *Executable) Kill() error {
 	doneChannel := make(chan error, 1)
 
 	go func() {
-		syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM)  // Don't know if this is required
-		syscall.Kill(-e.cmd.Process.Pid, syscall.SIGTERM) // Kill the whole process group
-		_, err := e.Wait()
-		doneChannel <- err
+		if e.cmd.Process != nil {
+			syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM)  // Don't know if this is required
+			syscall.Kill(-e.cmd.Process.Pid, syscall.SIGTERM) // Kill the whole process group
+			_, err := e.Wait()
+			doneChannel <- err
+		} else {
+			doneChannel <- nil
+		}
 	}()
 
 	var err error
