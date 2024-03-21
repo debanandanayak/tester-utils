@@ -140,9 +140,12 @@ func TestHasExited(t *testing.T) {
 }
 
 func TestStdin(t *testing.T) {
-	e := NewExecutable("grep")
+	e := NewExecutable("/usr/bin/grep")
 
-	e.Start("cat")
+	err := e.Start("cat")
+	if err != nil {
+		return
+	}
 	assert.False(t, e.HasExited(), "Expected to not have exited")
 
 	e.StdinPipe.Write([]byte("has cat"))
@@ -154,7 +157,7 @@ func TestStdin(t *testing.T) {
 }
 
 func TestRunWithStdin(t *testing.T) {
-	e := NewExecutable("grep")
+	e := NewExecutable("/usr/bin/grep")
 
 	result, err := e.RunWithStdin([]byte("has cat"), "cat")
 	assert.NoError(t, err)
@@ -169,9 +172,12 @@ func TestRunWithStdin(t *testing.T) {
 
 // Rogue == doesn't respond to SIGTERM
 func TestTerminatesRoguePrograms(t *testing.T) {
-	e := NewExecutable("bash")
+	e := NewExecutable("/bin/bash")
 
 	err := e.Start("-c", "trap '' SIGTERM SIGINT; sleep 60")
+	if err != nil {
+		return
+	}
 	assert.NoError(t, err)
 
 	time.Sleep(100 * time.Millisecond)
