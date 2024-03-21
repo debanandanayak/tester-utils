@@ -1,7 +1,6 @@
 package executable
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -12,9 +11,6 @@ func TestStart(t *testing.T) {
 	err := NewExecutable("/blah").Start()
 	assertErrorContains(t, err, "not found")
 	assertErrorContains(t, err, "/blah")
-
-	// Permissions are not preserved across remote git repos.
-	_ = removeFileExecutablePermission("./test_helpers/not_executable.sh")
 
 	err = NewExecutable("./test_helpers/not_executable.sh").Start()
 	assertErrorContains(t, err, "not an executable file")
@@ -30,24 +26,6 @@ func TestStart(t *testing.T) {
 
 func assertErrorContains(t *testing.T, err error, expectedMsg string) {
 	assert.Contains(t, err.Error(), expectedMsg)
-}
-
-func removeFileExecutablePermission(filePath string) error {
-	fileInfo, err := os.Stat(filePath)
-	if err != nil {
-		return err
-	}
-	currentMode := fileInfo.Mode()
-
-	// Clear the executable bits for user, group, and others
-	newMode := currentMode &^ (0111)
-
-	// Update the file mode
-	err = os.Chmod(filePath, newMode)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func TestRun(t *testing.T) {
@@ -140,7 +118,7 @@ func TestHasExited(t *testing.T) {
 }
 
 func TestStdin(t *testing.T) {
-	e := NewExecutable("/usr/bin/grep")
+	e := NewExecutable("grep")
 
 	err := e.Start("cat")
 	if err != nil {
@@ -157,7 +135,7 @@ func TestStdin(t *testing.T) {
 }
 
 func TestRunWithStdin(t *testing.T) {
-	e := NewExecutable("/usr/bin/grep")
+	e := NewExecutable("grep")
 
 	result, err := e.RunWithStdin([]byte("has cat"), "cat")
 	assert.NoError(t, err)
@@ -172,7 +150,7 @@ func TestRunWithStdin(t *testing.T) {
 
 // Rogue == doesn't respond to SIGTERM
 func TestTerminatesRoguePrograms(t *testing.T) {
-	e := NewExecutable("/bin/bash")
+	e := NewExecutable("bash")
 
 	err := e.Start("-c", "trap '' SIGTERM SIGINT; sleep 60")
 	if err != nil {

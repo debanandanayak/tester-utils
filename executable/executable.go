@@ -102,9 +102,18 @@ func (e *Executable) Start(args ...string) error {
 		return errors.New("process already in progress")
 	}
 
-	absolutePath, err := filepath.Abs(e.path)
-	if err != nil {
-		return fmt.Errorf("Unable to get absolute path of the executable: %w", err)
+	var absolutePath, resolvedPath string
+
+	// While passing executables present on PATH, filepath.Abs is unable to resolve their absolute path.
+	// In those cases we use the path returned by LookPath.
+	resolvedPath, err = exec.LookPath(e.path)
+	if err == nil {
+		absolutePath = resolvedPath
+	} else {
+		absolutePath, err = filepath.Abs(e.path)
+		if err != nil {
+			return fmt.Errorf("%s not found", e.path)
+		}
 	}
 	fileInfo, err := os.Stat(absolutePath)
 	if err != nil {
@@ -249,15 +258,15 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 func (e *Executable) Kill() error {
 	doneChannel := make(chan error, 1)
 
+	if e.cmd.Process == nil {
+		return nil
+	}
+
 	go func() {
-		if e.cmd.Process != nil {
-			syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM)  // Don't know if this is required
-			syscall.Kill(-e.cmd.Process.Pid, syscall.SIGTERM) // Kill the whole process group
-			_, err := e.Wait()
-			doneChannel <- err
-		} else {
-			doneChannel <- nil
-		}
+		syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM)  // Don't know if this is required
+		syscall.Kill(-e.cmd.Process.Pid, syscall.SIGTERM) // Kill the whole process group
+		_, err := e.Wait()
+		doneChannel <- err
 	}()
 
 	var err error
