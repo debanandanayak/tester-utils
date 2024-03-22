@@ -256,11 +256,11 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 
 // Kill terminates the program
 func (e *Executable) Kill() error {
-	doneChannel := make(chan error, 1)
-
 	if e.cmd.Process == nil {
 		return nil
 	}
+
+	doneChannel := make(chan error, 1)
 
 	go func() {
 		syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM)  // Don't know if this is required

@@ -120,10 +120,7 @@ func TestHasExited(t *testing.T) {
 func TestStdin(t *testing.T) {
 	e := NewExecutable("grep")
 
-	err := e.Start("cat")
-	if err != nil {
-		return
-	}
+	e.Start("cat")
 	assert.False(t, e.HasExited(), "Expected to not have exited")
 
 	e.StdinPipe.Write([]byte("has cat"))
@@ -153,9 +150,6 @@ func TestTerminatesRoguePrograms(t *testing.T) {
 	e := NewExecutable("bash")
 
 	err := e.Start("-c", "trap '' SIGTERM SIGINT; sleep 60")
-	if err != nil {
-		return
-	}
 	assert.NoError(t, err)
 
 	time.Sleep(100 * time.Millisecond)

@@ -1,3 +1,3 @@
 #!/bin/bash
-# This file can't be executed, permissions have been updated.
+# This file isn't executable.
 echo "$1"
