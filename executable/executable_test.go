@@ -1,15 +1,24 @@
 package executable
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestStart(t *testing.T) {
 	err := NewExecutable("/blah").Start()
-	assertErrorContains(t, err, "no such file")
+	assertErrorContains(t, err, "not found")
 	assertErrorContains(t, err, "/blah")
+
+	err = NewExecutable("./test_helpers/not_executable.sh").Start()
+	assertErrorContains(t, err, "not an executable file")
+	assertErrorContains(t, err, "not_executable.sh")
+
+	err = NewExecutable("./test_helpers/haskell").Start()
+	assertErrorContains(t, err, "not an executable file")
+	assertErrorContains(t, err, "haskell")
 
 	err = NewExecutable("./test_helpers/stdout_echo.sh").Start()
 	assert.NoError(t, err)

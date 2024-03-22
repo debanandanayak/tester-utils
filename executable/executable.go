@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"time"
 
 	"io"
@@ -98,6 +100,29 @@ func (e *Executable) Start(args ...string) error {
 
 	if e.isRunning() {
 		return errors.New("process already in progress")
+	}
+
+	var absolutePath, resolvedPath string
+
+	// While passing executables present on PATH, filepath.Abs is unable to resolve their absolute path.
+	// In those cases we use the path returned by LookPath.
+	resolvedPath, err = exec.LookPath(e.path)
+	if err == nil {
+		absolutePath = resolvedPath
+	} else {
+		absolutePath, err = filepath.Abs(e.path)
+		if err != nil {
+			return fmt.Errorf("%s not found", e.path)
+		}
+	}
+	fileInfo, err := os.Stat(absolutePath)
+	if err != nil {
+		return fmt.Errorf("%s not found", e.path)
+	}
+
+	// Check executable permission
+	if fileInfo.Mode().Perm()&0111 == 0 || fileInfo.IsDir() {
+		return fmt.Errorf("%s is not an executable file", e.path)
 	}
 
 	// TODO: Use timeout!
@@ -231,6 +256,10 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 
 // Kill terminates the program
 func (e *Executable) Kill() error {
+	if e.cmd.Process == nil {
+		return nil
+	}
+
 	doneChannel := make(chan error, 1)
 
 	go func() {
