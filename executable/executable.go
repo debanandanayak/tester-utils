@@ -256,7 +256,7 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 
 // Kill terminates the program
 func (e *Executable) Kill() error {
-	if e.cmd.Process == nil {
+	if !e.isRunning() || e.cmd.Process == nil {
 		return nil
 	}
 

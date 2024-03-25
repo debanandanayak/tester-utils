@@ -24,6 +24,35 @@ func TestStart(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestStartAndKill(t *testing.T) {
+	e := NewExecutable("/blah")
+	err := e.Start()
+	assertErrorContains(t, err, "not found")
+	assertErrorContains(t, err, "/blah")
+	err = e.Kill()
+	assert.NoError(t, err)
+
+	e = NewExecutable("./test_helpers/not_executable.sh")
+	err = e.Start()
+	assertErrorContains(t, err, "not an executable file")
+	assertErrorContains(t, err, "not_executable.sh")
+	err = e.Kill()
+	assert.NoError(t, err)
+
+	e = NewExecutable("./test_helpers/haskell")
+	err = e.Start()
+	assertErrorContains(t, err, "not an executable file")
+	assertErrorContains(t, err, "haskell")
+	err = e.Kill()
+	assert.NoError(t, err)
+
+	e = NewExecutable("./test_helpers/stdout_echo.sh")
+	err = e.Start()
+	assert.NoError(t, err)
+	err = e.Kill()
+	assert.NoError(t, err)
+}
+
 func assertErrorContains(t *testing.T, err error, expectedMsg string) {
 	assert.Contains(t, err.Error(), expectedMsg)
 }
