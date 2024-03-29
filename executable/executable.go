@@ -274,11 +274,14 @@ func (e *Executable) Kill() error {
 	case doneError := <-doneChannel:
 		err = doneError
 	case <-time.After(2 * time.Second):
-		err = fmt.Errorf("program failed to exit in 2 seconds after receiving sigterm")
-		syscall.Kill(e.cmd.Process.Pid, syscall.SIGKILL)  // Don't know if this is required
-		syscall.Kill(-e.cmd.Process.Pid, syscall.SIGKILL) // Kill the whole process group
+		cmd := e.cmd
+		if cmd != nil {
+			err = fmt.Errorf("program failed to exit in 2 seconds after receiving sigterm")
+			syscall.Kill(cmd.Process.Pid, syscall.SIGKILL)  // Don't know if this is required
+			syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL) // Kill the whole process group
 
-		<-doneChannel // Wait for Wait() to return
+			<-doneChannel // Wait for Wait() to return
+		}
 	}
 
 	return err
