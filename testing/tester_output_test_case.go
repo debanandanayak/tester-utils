@@ -55,7 +55,8 @@ func buildTestCasesJsonUntilStageSlug(untilStageSlug string, testerDefinition te
 	stageSlugs := []string{}
 	foundStageSlug := false
 
-	for _, testCase := range testerDefinition.TestCases {
+	for i := len(testerDefinition.TestCases) - 1; i >= 0; i-- {
+		testCase := testerDefinition.TestCases[i]
 		stageSlugs = append(stageSlugs, testCase.Slug)
 
 		if testCase.Slug == untilStageSlug {
