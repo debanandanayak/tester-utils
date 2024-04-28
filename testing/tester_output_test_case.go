@@ -55,8 +55,7 @@ func buildTestCasesJsonUntilStageSlug(untilStageSlug string, testerDefinition te
 	stageSlugs := []string{}
 	foundStageSlug := false
 
-	for i := len(testerDefinition.TestCases) - 1; i >= 0; i-- {
-		testCase := testerDefinition.TestCases[i]
+	for _, testCase := range testerDefinition.TestCases {
 		stageSlugs = append(stageSlugs, testCase.Slug)
 
 		if testCase.Slug == untilStageSlug {
@@ -69,7 +68,15 @@ func buildTestCasesJsonUntilStageSlug(untilStageSlug string, testerDefinition te
 		panic(fmt.Sprintf("Stage slug %s not found", untilStageSlug))
 	}
 
-	return buildTestCasesJson(stageSlugs)
+	// Reverse the order of stageSlugs before returning the JSON
+	reversedStageSlugs := make([]string, len(stageSlugs))
+	copy(reversedStageSlugs, stageSlugs)
+
+	for i, j := 0, len(reversedStageSlugs)-1; i < j; i, j = i+1, j-1 {
+		reversedStageSlugs[i], reversedStageSlugs[j] = reversedStageSlugs[j], reversedStageSlugs[i]
+	}
+
+	return buildTestCasesJson(reversedStageSlugs)
 }
 
 func TestTesterOutput(t *testing.T, testerDefinition tester_definition.TesterDefinition, testCases map[string]TesterOutputTestCase) {
