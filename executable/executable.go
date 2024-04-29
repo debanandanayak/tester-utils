@@ -126,14 +126,14 @@ func (e *Executable) Start(args ...string) error {
 	}
 
 	// TODO: Use timeout!
-	e.cmd = exec.Command(e.path, args...)
-	e.cmd.Dir = e.WorkingDir
-	e.cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	cmd := exec.Command(e.path, args...)
+	cmd.Dir = e.WorkingDir
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	e.readDone = make(chan bool)
 	e.atleastOneReadDone = false
 
 	// Setup stdout capture
-	e.stdoutPipe, err = e.cmd.StdoutPipe()
+	e.stdoutPipe, err = cmd.StdoutPipe()
 	if err != nil {
 		return err
 	}
@@ -142,7 +142,7 @@ func (e *Executable) Start(args ...string) error {
 	e.stdoutLineWriter = linewriter.New(newLoggerWriter(e.loggerFunc), 500*time.Millisecond)
 
 	// Setup stderr relay
-	e.stderrPipe, err = e.cmd.StderrPipe()
+	e.stderrPipe, err = cmd.StderrPipe()
 	if err != nil {
 		return err
 	}
@@ -150,16 +150,17 @@ func (e *Executable) Start(args ...string) error {
 	e.stderrBuffer = bytes.NewBuffer(e.stderrBytes)
 	e.stderrLineWriter = linewriter.New(newLoggerWriter(e.loggerFunc), 500*time.Millisecond)
 
-	e.StdinPipe, err = e.cmd.StdinPipe()
+	e.StdinPipe, err = cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+	err = cmd.Start()
 	if err != nil {
 		return err
 	}
 
-	err = e.cmd.Start()
-	if err != nil {
-		return err
-	}
-
+	// At this point, it is safe to set e.cmd as cmd, if any of the above steps fail, we don't want to leave e.cmd in an inconsistent state
+	e.cmd = cmd
 	e.setupIORelay(e.stdoutPipe, e.stdoutBuffer, e.stdoutLineWriter)
 	e.setupIORelay(e.stderrPipe, e.stderrBuffer, e.stderrLineWriter)
 
