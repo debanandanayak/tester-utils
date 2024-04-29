@@ -38,12 +38,13 @@ type TesterOutputTestCase struct {
 
 func buildTestCasesJson(slugs []string) string {
 	testCases := []map[string]string{}
+	totalStages := len(slugs)
 
 	for index, slug := range slugs {
 		testCases = append(testCases, map[string]string{
 			"slug":              slug,
-			"tester_log_prefix": fmt.Sprintf("stage-%d", index+1),
-			"title":             fmt.Sprintf("Stage #%d: %s", index+1, slug),
+			"tester_log_prefix": fmt.Sprintf("stage-%d", totalStages-index),
+			"title":             fmt.Sprintf("Stage #%d: %s", totalStages-index, slug),
 		})
 	}
 
@@ -142,6 +143,6 @@ func runCLIStage(testerDefinition tester_definition.TesterDefinition, testCasesJ
 
 func failWithMockerOutput(t *testing.T, m *stdio_mocker.IOMocker) {
 	m.End()
-	t.Error(fmt.Sprintf("stdout: \n%s\n\nstderr: \n%s", m.ReadStdout(), m.ReadStderr()))
+	t.Errorf("stdout: \n%s\n\nstderr: \n%s", m.ReadStdout(), m.ReadStderr())
 	t.FailNow()
 }
