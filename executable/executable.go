@@ -17,7 +17,7 @@ import (
 
 // Executable represents a program that can be executed
 type Executable struct {
-	path          string
+	Path          string
 	timeoutInSecs int
 	loggerFunc    func(string)
 
@@ -67,7 +67,7 @@ func nullLogger(msg string) {
 
 func (e *Executable) Clone() *Executable {
 	return &Executable{
-		path:          e.path,
+		Path:          e.Path,
 		timeoutInSecs: e.timeoutInSecs,
 		loggerFunc:    e.loggerFunc,
 		WorkingDir:    e.WorkingDir,
@@ -76,12 +76,12 @@ func (e *Executable) Clone() *Executable {
 
 // NewExecutable returns an Executable
 func NewExecutable(path string) *Executable {
-	return &Executable{path: path, timeoutInSecs: 10, loggerFunc: nullLogger}
+	return &Executable{Path: path, timeoutInSecs: 10, loggerFunc: nullLogger}
 }
 
 // NewVerboseExecutable returns an Executable struct with a logger configured
 func NewVerboseExecutable(path string, loggerFunc func(string)) *Executable {
-	return &Executable{path: path, timeoutInSecs: 10, loggerFunc: loggerFunc}
+	return &Executable{Path: path, timeoutInSecs: 10, loggerFunc: loggerFunc}
 }
 
 func (e *Executable) isRunning() bool {
@@ -104,27 +104,27 @@ func (e *Executable) Start(args ...string) error {
 
 	// While passing executables present on PATH, filepath.Abs is unable to resolve their absolute path.
 	// In those cases we use the path returned by LookPath.
-	resolvedPath, err = exec.LookPath(e.path)
+	resolvedPath, err = exec.LookPath(e.Path)
 	if err == nil {
 		absolutePath = resolvedPath
 	} else {
-		absolutePath, err = filepath.Abs(e.path)
+		absolutePath, err = filepath.Abs(e.Path)
 		if err != nil {
-			return fmt.Errorf("%s not found", e.path)
+			return fmt.Errorf("%s not found", e.Path)
 		}
 	}
 	fileInfo, err := os.Stat(absolutePath)
 	if err != nil {
-		return fmt.Errorf("%s not found", e.path)
+		return fmt.Errorf("%s not found", e.Path)
 	}
 
 	// Check executable permission
 	if fileInfo.Mode().Perm()&0111 == 0 || fileInfo.IsDir() {
-		return fmt.Errorf("%s is not an executable file", e.path)
+		return fmt.Errorf("%s is not an executable file", e.Path)
 	}
 
 	// TODO: Use timeout!
-	cmd := exec.Command(e.path, args...)
+	cmd := exec.Command(e.Path, args...)
 	cmd.Dir = e.WorkingDir
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	e.readDone = make(chan bool)
