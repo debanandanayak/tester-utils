@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -181,7 +180,7 @@ func (e *Executable) setupIORelay(source io.Reader, destination1 io.Writer, dest
 
 		e.atleastOneReadDone = true
 		e.readDone <- true
-		io.Copy(ioutil.Discard, source) // Let's drain the pipe in case any content is leftover
+		io.Copy(io.Discard, source) // Let's drain the pipe in case any content is leftover
 	}()
 }
 
