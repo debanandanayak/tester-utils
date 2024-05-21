@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -24,9 +25,7 @@ type Executable struct {
 	// WorkingDir can be set before calling Start or Run to customize the working directory of the executable.
 	WorkingDir string
 
-	StdinPipe    io.WriteCloser
-	StdoutBuffer *bytes.Buffer
-	StderrBuffer *bytes.Buffer
+	StdinPipe io.WriteCloser
 
 	// These are set & removed together
 	atleastOneReadDone bool
@@ -35,6 +34,8 @@ type Executable struct {
 	stderrPipe         io.ReadCloser
 	stdoutBytes        []byte
 	stderrBytes        []byte
+	stdoutBuffer       *bytes.Buffer
+	stderrBuffer       *bytes.Buffer
 	stdoutLineWriter   *linewriter.LineWriter
 	stderrLineWriter   *linewriter.LineWriter
 	readDone           chan bool
@@ -63,6 +64,7 @@ func (w *loggerWriter) Write(bytes []byte) (n int, err error) {
 }
 
 func nullLogger(msg string) {
+	return
 }
 
 func (e *Executable) Clone() *Executable {
@@ -89,7 +91,7 @@ func (e *Executable) isRunning() bool {
 }
 
 func (e *Executable) HasExited() bool {
-	return e.atleastOneReadDone
+	return e.atleastOneReadDone == true
 }
 
 // Start starts the specified command but does not wait for it to complete.
@@ -136,7 +138,7 @@ func (e *Executable) Start(args ...string) error {
 		return err
 	}
 	e.stdoutBytes = []byte{}
-	e.StdoutBuffer = bytes.NewBuffer(e.stdoutBytes)
+	e.stdoutBuffer = bytes.NewBuffer(e.stdoutBytes)
 	e.stdoutLineWriter = linewriter.New(newLoggerWriter(e.loggerFunc), 500*time.Millisecond)
 
 	// Setup stderr relay
@@ -145,7 +147,7 @@ func (e *Executable) Start(args ...string) error {
 		return err
 	}
 	e.stderrBytes = []byte{}
-	e.StderrBuffer = bytes.NewBuffer(e.stderrBytes)
+	e.stderrBuffer = bytes.NewBuffer(e.stderrBytes)
 	e.stderrLineWriter = linewriter.New(newLoggerWriter(e.loggerFunc), 500*time.Millisecond)
 
 	e.StdinPipe, err = cmd.StdinPipe()
@@ -159,8 +161,8 @@ func (e *Executable) Start(args ...string) error {
 
 	// At this point, it is safe to set e.cmd as cmd, if any of the above steps fail, we don't want to leave e.cmd in an inconsistent state
 	e.cmd = cmd
-	e.setupIORelay(e.stdoutPipe, e.StdoutBuffer, e.stdoutLineWriter)
-	e.setupIORelay(e.stderrPipe, e.StderrBuffer, e.stderrLineWriter)
+	e.setupIORelay(e.stdoutPipe, e.stdoutBuffer, e.stdoutLineWriter)
+	e.setupIORelay(e.stderrPipe, e.stderrBuffer, e.stderrLineWriter)
 
 	return nil
 }
@@ -179,7 +181,7 @@ func (e *Executable) setupIORelay(source io.Reader, destination1 io.Writer, dest
 
 		e.atleastOneReadDone = true
 		e.readDone <- true
-		io.Copy(io.Discard, source) // Let's drain the pipe in case any content is leftover
+		io.Copy(ioutil.Discard, source) // Let's drain the pipe in case any content is leftover
 	}()
 }
 
@@ -216,8 +218,8 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 		e.cmd = nil
 		e.stdoutPipe = nil
 		e.stderrPipe = nil
-		e.StdoutBuffer = nil
-		e.StderrBuffer = nil
+		e.stdoutBuffer = nil
+		e.stderrBuffer = nil
 		e.stdoutBytes = nil
 		e.stderrBytes = nil
 		e.stdoutLineWriter = nil
@@ -243,8 +245,8 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 	e.stdoutLineWriter.Flush()
 	e.stderrLineWriter.Flush()
 
-	stdout := e.StdoutBuffer.Bytes()
-	stderr := e.StderrBuffer.Bytes()
+	stdout := e.stdoutBuffer.Bytes()
+	stderr := e.stderrBuffer.Bytes()
 
 	return ExecutableResult{
 		Stdout:   stdout,
