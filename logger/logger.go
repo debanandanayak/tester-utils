@@ -180,6 +180,14 @@ func (l *Logger) Debugln(msg string) {
 	}
 }
 
+func (l *Logger) Plainf(fstring string, args ...interface{}) {
+	formattedString := fmt.Sprintf(fstring, args...)
+
+	for _, line := range strings.Split(formattedString, "\n") {
+		l.logger.Println(line)
+	}
+}
+
 func (l *Logger) Plainln(msg string) {
 	lines := strings.Split(msg, "\n")
 
