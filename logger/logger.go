@@ -181,7 +181,11 @@ func (l *Logger) Debugln(msg string) {
 }
 
 func (l *Logger) Plainf(fstring string, args ...interface{}) {
-	l.logger.Printf(fstring, args...)
+	formattedString := fmt.Sprintf(fstring, args...)
+
+	for _, line := range strings.Split(formattedString, "\n") {
+		l.logger.Println(line)
+	}
 }
 
 func (l *Logger) Plainln(msg string) {
