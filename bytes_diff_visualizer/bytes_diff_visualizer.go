@@ -43,24 +43,24 @@ func VisualizeByteDiff(actual []byte, expected []byte) []string {
 	linesBuffer := bytes.NewBuffer([]byte{})
 	tabWriter := tabwriter.NewWriter(linesBuffer, 20, 0, 1, ' ', tabwriter.Debug)
 
-	tabWriter.Write([]byte(fmt.Sprintf("Expected (bytes %v-%v), hexadecimal:       \t ASCII:\n", byteRangeStart, byteRangeEnd)))
+	fmt.Fprintf(tabWriter, "Expected (bytes %v-%v), hexadecimal:       \t ASCII:\n", byteRangeStart, byteRangeEnd)
 
 	for i := byteRangeStart; i < intmin(byteRangeEnd, len(expected)); i += byteCountPerLine {
 		end := intmin(i+byteCountPerLine, len(expected))
-		tabWriter.Write([]byte(fmt.Sprintf("%v\t %v\n", formatBytesAsHex(expected[i:end]), formatBytesAsAscii(expected[i:end]))))
+		fmt.Fprintf(tabWriter, "%v\t %v\n", formatBytesAsHex(expected[i:end]), formatBytesAsAscii(expected[i:end]))
 	}
 
 	tabWriter.Write([]byte("\n"))
-	tabWriter.Write([]byte(fmt.Sprintf("Actual (bytes %v-%v), hexadecimal:         \t ASCII:\n", byteRangeStart, byteRangeEnd)))
+	fmt.Fprintf(tabWriter, "Actual (bytes %v-%v), hexadecimal:         \t ASCII:\n", byteRangeStart, byteRangeEnd)
 
 	for i := byteRangeStart; i < intmin(byteRangeEnd, len(actual)); i += byteCountPerLine {
 		end := intmin(i+byteCountPerLine, len(actual))
-		tabWriter.Write([]byte(fmt.Sprintf("%v\t %v\n", formatBytesAsHex(actual[i:end]), formatBytesAsAscii(actual[i:end]))))
+		fmt.Fprintf(tabWriter, "%v\t %v\n", formatBytesAsHex(actual[i:end]), formatBytesAsAscii(actual[i:end]))
 	}
 
 	tabWriter.Flush()
 
-	output := string(linesBuffer.Bytes())
+	output := linesBuffer.String()
 	if output[len(output)-1] == '\n' {
 		output = output[:len(output)-1]
 	}
