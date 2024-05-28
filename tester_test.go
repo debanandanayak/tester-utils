@@ -34,19 +34,6 @@ func buildTestCasesJson(slugs []string) string {
 	return string(testCasesJson)
 }
 
-func buildTester(t *testing.T, definition tester_definition.TesterDefinition, testCasesJson string) Tester {
-	tester, err := NewTester(map[string]string{
-		"CODECRAFTERS_SUBMISSION_DIR":  "./test_helpers/valid_app_dir",
-		"CODECRAFTERS_TEST_CASES_JSON": buildTestCasesJson([]string{"test-1", "test-2"}),
-	}, definition)
-
-	if err != nil {
-		t.Error(err)
-	}
-
-	return tester
-}
-
 func TestAllStagesPass(t *testing.T) {
 	definition := tester_definition.TesterDefinition{
 		TestCases: []tester_definition.TestCase{
@@ -54,9 +41,11 @@ func TestAllStagesPass(t *testing.T) {
 			{Slug: "test-2", TestFunc: passFunc},
 		},
 	}
-
-	tester := buildTester(t, definition, buildTestCasesJson([]string{"test-1", "test-2"}))
-	exitCode := tester.RunCLI()
+	env := map[string]string{
+		"CODECRAFTERS_SUBMISSION_DIR":  "./test_helpers/valid_app_dir",
+		"CODECRAFTERS_TEST_CASES_JSON": buildTestCasesJson([]string{"test-1", "test-2"}),
+	}
+	exitCode := RunCLI(env, definition)
 	assert.Equal(t, exitCode, 0)
 }
 
@@ -68,7 +57,10 @@ func TestOneStageFails(t *testing.T) {
 		},
 	}
 
-	tester := buildTester(t, definition, buildTestCasesJson([]string{"test-1", "test-2"}))
-	exitCode := tester.RunCLI()
+	env := map[string]string{
+		"CODECRAFTERS_SUBMISSION_DIR":  "./test_helpers/valid_app_dir",
+		"CODECRAFTERS_TEST_CASES_JSON": buildTestCasesJson([]string{"test-1", "test-2"}),
+	}
+	exitCode := RunCLI(env, definition)
 	assert.Equal(t, exitCode, 1)
 }

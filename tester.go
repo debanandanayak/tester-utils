@@ -16,12 +16,12 @@ type Tester struct {
 	definition tester_definition.TesterDefinition
 }
 
-// NewTester creates a Tester based on the TesterDefinition provided
-func NewTester(env map[string]string, definition tester_definition.TesterDefinition) (Tester, error) {
+// newTester creates a Tester based on the TesterDefinition provided
+func newTester(env map[string]string, definition tester_definition.TesterDefinition) (Tester, error) {
 	context, err := tester_context.GetTesterContext(env, definition.ExecutableFileName)
 	if err != nil {
-		fmt.Println(err.Error())
-		return Tester{}, err
+		fmt.Printf("CodeCrafters internal error. Error fetching tester context: %v", err)
+		return Tester{}, fmt.Errorf("CodeCrafters internal error. Error fetching tester context: %v", err)
 	}
 
 	tester := Tester{
@@ -30,15 +30,22 @@ func NewTester(env map[string]string, definition tester_definition.TesterDefinit
 	}
 
 	if err := tester.validateContext(); err != nil {
-		return Tester{}, err
+		return Tester{}, fmt.Errorf("CodeCrafters internal error. Error validating tester context: %v", err)
 	}
 
 	return tester, nil
 }
 
 // RunCLI executes the tester based on user-provided env vars
-func (tester Tester) RunCLI() int {
+func RunCLI(env map[string]string, definition tester_definition.TesterDefinition) int {
 	random.Init()
+
+	tester, err := newTester(env, definition)
+	if err != nil {
+		fmt.Printf("%s", err)
+		return 1
+	}
+
 	tester.printDebugContext()
 
 	// TODO: Validate context here instead of in NewTester?
