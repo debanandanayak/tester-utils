@@ -127,18 +127,11 @@ func runCLIStage(testerDefinition tester_definition.TesterDefinition, testCasesJ
 		panic(err)
 	}
 
-	tester, err := tester_utils.NewTester(map[string]string{
+	return tester_utils.RunCLI(map[string]string{
 		"CODECRAFTERS_TEST_CASES_JSON": testCasesJson,
 		"CODECRAFTERS_SUBMISSION_DIR":  path,
 		"CODECRAFTERS_SKIP_ANTI_CHEAT": strconv.FormatBool(skipAntiCheat),
 	}, testerDefinition)
-
-	if err != nil {
-		fmt.Printf("%s", err)
-		return 1
-	}
-
-	return tester.RunCLI()
 }
 
 func failWithMockerOutput(t *testing.T, m *stdio_mocker.IOMocker) {

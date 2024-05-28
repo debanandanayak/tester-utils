@@ -37,7 +37,7 @@ func newTester(env map[string]string, definition tester_definition.TesterDefinit
 }
 
 // RunCLI executes the tester based on user-provided env vars
-func (tester Tester) RunCLI(env map[string]string, definition tester_definition.TesterDefinition) int {
+func RunCLI(env map[string]string, definition tester_definition.TesterDefinition) int {
 	random.Init()
 
 	tester, err := newTester(env, definition)
