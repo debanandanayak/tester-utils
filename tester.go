@@ -20,8 +20,8 @@ type Tester struct {
 func NewTester(env map[string]string, definition tester_definition.TesterDefinition) (Tester, error) {
 	context, err := tester_context.GetTesterContext(env, definition.ExecutableFileName)
 	if err != nil {
-		fmt.Println(err.Error())
-		return Tester{}, err
+		fmt.Printf("CodeCrafters internal error. Error fetching tester context: %v", err)
+		return Tester{}, fmt.Errorf("CodeCrafters internal error. Error fetching tester context: %v", err)
 	}
 
 	tester := Tester{
@@ -30,7 +30,7 @@ func NewTester(env map[string]string, definition tester_definition.TesterDefinit
 	}
 
 	if err := tester.validateContext(); err != nil {
-		return Tester{}, err
+		return Tester{}, fmt.Errorf("CodeCrafters internal error. Error validating tester context: %v", err)
 	}
 
 	return tester, nil
