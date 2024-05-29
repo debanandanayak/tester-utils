@@ -48,8 +48,16 @@ func VisualizeByteDiff(actual []byte, expected []byte) []string {
 
 	for i := byteRangeStart; i < intmin(byteRangeEnd, len(expected)); i += byteCountPerLine {
 		end := intmin(i+byteCountPerLine, len(expected))
-		bytesAsHex := PadRight(formatBytesAsHex(expected[i:end]), " ", 60)
-		bytesAsAscii := (formatBytesAsAscii(expected[i:end]))
+
+		var bytesAsAscii, bytesAsHex string
+		if firstDiffIndex >= i && firstDiffIndex < end {
+			bytesAsHex = formatBytesAsHex(expected[i:firstDiffIndex]) + " " + colorizeString(color.FgHiGreen, formatBytesAsHex(expected[firstDiffIndex:firstDiffIndex+1])) + " " + formatBytesAsHex(expected[firstDiffIndex+1:end])
+			bytesAsHex = PadRight(bytesAsHex, " ", 69)
+			bytesAsAscii = formatBytesAsAscii(expected[i:firstDiffIndex]) + colorizeString(color.FgHiGreen, formatBytesAsAscii(expected[firstDiffIndex:firstDiffIndex+1])) + formatBytesAsAscii(expected[firstDiffIndex+1:end])
+		} else {
+			bytesAsHex = PadRight(formatBytesAsHex(expected[i:end]), " ", 60)
+			bytesAsAscii = formatBytesAsAscii(expected[i:end])
+		}
 
 		fmt.Fprintf(linesBuffer, "%v| %v\n", bytesAsHex, bytesAsAscii)
 	}
@@ -61,8 +69,17 @@ func VisualizeByteDiff(actual []byte, expected []byte) []string {
 
 	for i := byteRangeStart; i < intmin(byteRangeEnd, len(actual)); i += byteCountPerLine {
 		end := intmin(i+byteCountPerLine, len(actual))
-		bytesAsHex := PadRight(formatBytesAsHex(actual[i:end]), " ", 60)
-		bytesAsAscii := (formatBytesAsAscii(actual[i:end]))
+
+		var bytesAsAscii, bytesAsHex string
+		if firstDiffIndex >= i && firstDiffIndex < end {
+			bytesAsHex = formatBytesAsHex(actual[i:firstDiffIndex]) + " " + colorizeString(color.FgHiRed, formatBytesAsHex(actual[firstDiffIndex:firstDiffIndex+1])) + " " + formatBytesAsHex(actual[firstDiffIndex+1:end])
+			bytesAsHex = PadRight(bytesAsHex, " ", 69)
+			bytesAsAscii = formatBytesAsAscii(actual[i:firstDiffIndex]) + colorizeString(color.FgHiRed, formatBytesAsAscii(actual[firstDiffIndex:firstDiffIndex+1])) + formatBytesAsAscii(actual[firstDiffIndex+1:end])
+		} else {
+			bytesAsHex = PadRight(formatBytesAsHex(actual[i:end]), " ", 60)
+			bytesAsAscii = (formatBytesAsAscii(actual[i:end]))
+		}
+
 		fmt.Fprintf(linesBuffer, "%v| %v\n", bytesAsHex, bytesAsAscii)
 	}
 
@@ -86,6 +103,11 @@ func formatBytesAsAscii(value []byte) string {
 	}
 
 	return strings.Join(asciiRepresentations, "")
+}
+
+func formatHexColorized(value []byte, i int, firstDiffIndex int, end int) string {
+	bytesAsHex := formatBytesAsHex(value[i:firstDiffIndex]) + " " + colorizeString(color.FgHiRed, formatBytesAsHex(value[firstDiffIndex:firstDiffIndex+1])) + " " + formatBytesAsHex(value[firstDiffIndex+1:end])
+	return bytesAsHex
 }
 
 func formatBytesAsHex(value []byte) string {
@@ -112,10 +134,15 @@ func intmin(a int, b int) int {
 	return b
 }
 
-func colorize(colorToUse color.Attribute, msg string) string {
-	colorizedLine := color.New(colorToUse).SprintFunc()(msg)
+// func colorize(colorToUse color.Attribute, msg string) string {
+// 	colorizedLine := color.New(colorToUse).SprintFunc()(msg)
 
-	return colorizedLine
+// 	return colorizedLine
+// }
+
+func colorizeString(colorToUse color.Attribute, msg string) string {
+	c := color.New(colorToUse)
+	return c.Sprint(msg)
 }
 
 func PadRight(str, pad string, lenght int) string {
