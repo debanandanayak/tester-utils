@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
-	"text/tabwriter"
 
 	"github.com/fatih/color"
 )
@@ -13,39 +12,11 @@ import (
 //
 // The lines will include ANSI escape codes to colorize the output.
 func VisualizeByteDiff(actual []byte, expected []byte) []string {
-	byteDiffLines, row, col := visualizeByteDiff(actual, expected)
-
-	// Always odd, so get the size of each half exactly, +1 for the sepearator line
-	rowsInEachHalf := len(byteDiffLines)/2 + 1
-	// The line that contains the first differing byte, in the "expected" half
-	expectedLine := byteDiffLines[row]
-	// The line that contains the first differing byte, in the "actual" half
-	actualLine := byteDiffLines[row+rowsInEachHalf]
-	// The start and end index of the hex representation of the differing byte
-	// col is the index of the differing byte, so we have (col-1+1*2) bytes of hex representation before it, and (col*2) bytes of space
-	startIdxHex, endIdxHex := col*3, col*3+2
-	// We use the "|" separator to find the index of the differing byte in the ASCII representation
-	// We add 2 to the index to skip the space and the separator
-	idxAscii := strings.Index(expectedLine, "|") + 2 + col
-
-	byteDiffLines[row] = expectedLine[:startIdxHex] + colorize(color.FgHiGreen, expectedLine[startIdxHex:endIdxHex]) + expectedLine[endIdxHex:idxAscii] + colorize(color.FgHiGreen, expectedLine[idxAscii:idxAscii+1]) + expectedLine[idxAscii+1:]
-
-	byteDiffLines[row+rowsInEachHalf] = actualLine[:startIdxHex] + colorize(color.FgHiRed, actualLine[startIdxHex:endIdxHex]) + actualLine[endIdxHex:idxAscii] + colorize(color.FgHiRed, actualLine[idxAscii:idxAscii+1]) + actualLine[idxAscii+1:]
-
-	return byteDiffLines
-}
-
-// visualizeByteDiff visualizes the difference between two byte slices, returning lines to be presented to the user.
-// We also want to highlight the first differing byte in the output.
-// For that reason we return the row and column of the first differing byte.
-func visualizeByteDiff(actual []byte, expected []byte) ([]string, int, int) {
 	// If both are exactly the same, return an empty slice
 	if bytes.Equal(actual, expected) {
-		return []string{}, -1, -1
+		return []string{}
 	}
 
-	rows := 1 // "Expected ... line"
-	var firstDiffIndexRow, firstDiffIndexCol int
 	// Find the index of the first differing byte
 	var firstDiffIndex int = -1
 
@@ -71,38 +42,35 @@ func visualizeByteDiff(actual []byte, expected []byte) ([]string, int, int) {
 	byteRangeEnd := intmin(byteRangeStart+totalByteCountToDisplay, intmax(len(actual), len(expected)))
 
 	linesBuffer := bytes.NewBuffer([]byte{})
-	tabWriter := tabwriter.NewWriter(linesBuffer, 20, 0, 1, ' ', tabwriter.Debug)
 
-	fmt.Fprintf(tabWriter, "Expected (bytes %v-%v), hexadecimal:       \t ASCII:\n", byteRangeStart, byteRangeEnd)
+	leftHeader := PadRight(fmt.Sprintf("Expected (bytes %v-%v), hexadecimal:", byteRangeStart, byteRangeEnd), " ", 60)
+	fmt.Fprintf(linesBuffer, "%s| ASCII:\n", leftHeader)
 
 	for i := byteRangeStart; i < intmin(byteRangeEnd, len(expected)); i += byteCountPerLine {
 		end := intmin(i+byteCountPerLine, len(expected))
+		bytesAsHex := PadRight(formatBytesAsHex(expected[i:end]), " ", 60)
+		bytesAsAscii := (formatBytesAsAscii(expected[i:end]))
 
-		if firstDiffIndex >= i && firstDiffIndex < end {
-			firstDiffIndexCol = firstDiffIndex - i
-			firstDiffIndexRow = rows
-		} else {
-			rows += 1
-		}
-
-		fmt.Fprintf(tabWriter, "%v\t %v\n", formatBytesAsHex(expected[i:end]), formatBytesAsAscii(expected[i:end]))
+		fmt.Fprintf(linesBuffer, "%v| %v\n", bytesAsHex, bytesAsAscii)
 	}
 
-	tabWriter.Write([]byte("\n"))
-	fmt.Fprintf(tabWriter, "Actual (bytes %v-%v), hexadecimal:         \t ASCII:\n", byteRangeStart, byteRangeEnd)
+	linesBuffer.Write([]byte("\n"))
+
+	leftHeader = PadRight(fmt.Sprintf("Actual (bytes %v-%v), hexadecimal:", byteRangeStart, byteRangeEnd), " ", 60)
+	fmt.Fprintf(linesBuffer, "%s| ASCII:\n", leftHeader)
 
 	for i := byteRangeStart; i < intmin(byteRangeEnd, len(actual)); i += byteCountPerLine {
 		end := intmin(i+byteCountPerLine, len(actual))
-		fmt.Fprintf(tabWriter, "%v\t %v\n", formatBytesAsHex(actual[i:end]), formatBytesAsAscii(actual[i:end]))
+		bytesAsHex := PadRight(formatBytesAsHex(actual[i:end]), " ", 60)
+		bytesAsAscii := (formatBytesAsAscii(actual[i:end]))
+		fmt.Fprintf(linesBuffer, "%v| %v\n", bytesAsHex, bytesAsAscii)
 	}
-
-	tabWriter.Flush()
 
 	output := linesBuffer.String()
 	if output[len(output)-1] == '\n' {
 		output = output[:len(output)-1]
 	}
-	return strings.Split(output, "\n"), firstDiffIndexRow, firstDiffIndexCol
+	return strings.Split(output, "\n")
 }
 
 func formatBytesAsAscii(value []byte) string {
@@ -148,4 +116,21 @@ func colorize(colorToUse color.Attribute, msg string) string {
 	colorizedLine := color.New(colorToUse).SprintFunc()(msg)
 
 	return colorizedLine
+}
+
+func PadRight(str, pad string, lenght int) string {
+	for {
+		str += pad
+		if len(str) > lenght {
+			return str[0:lenght]
+		}
+	}
+}
+func PadLeft(str, pad string, lenght int) string {
+	for {
+		str = pad + str
+		if len(str) > lenght {
+			return str[0:lenght]
+		}
+	}
 }
