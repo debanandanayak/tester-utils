@@ -144,19 +144,19 @@ func colorizeString(colorToUse color.Attribute, msg string) string {
 	return c.Sprint(msg)
 }
 
-func PadRight(str, pad string, lenght int) string {
+func PadRight(str, pad string, length int) string {
 	for {
 		str += pad
-		if len(str) > lenght {
-			return str[0:lenght]
+		if len(str) > length {
+			return str[0:length]
 		}
 	}
 }
-func PadLeft(str, pad string, lenght int) string {
+func PadLeft(str, pad string, length int) string {
 	for {
 		str = pad + str
-		if len(str) > lenght {
-			return str[0:lenght]
+		if len(str) > length {
+			return str[0:length]
 		}
 	}
 }
