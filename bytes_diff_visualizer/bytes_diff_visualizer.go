@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
-	"text/tabwriter"
+
+	"github.com/fatih/color"
 )
 
 // VisualizeByteDiff visualizes the difference between two byte slices, returning lines to be presented to the user.
@@ -41,26 +42,34 @@ func VisualizeByteDiff(actual []byte, expected []byte) []string {
 	byteRangeEnd := intmin(byteRangeStart+totalByteCountToDisplay, intmax(len(actual), len(expected)))
 
 	linesBuffer := bytes.NewBuffer([]byte{})
-	tabWriter := tabwriter.NewWriter(linesBuffer, 20, 0, 1, ' ', tabwriter.Debug)
 
-	tabWriter.Write([]byte(fmt.Sprintf("Expected (bytes %v-%v), hexadecimal:       \t ASCII:\n", byteRangeStart, byteRangeEnd)))
+	leftHeader := PadRight(fmt.Sprintf("Expected (bytes %v-%v), hexadecimal:", byteRangeStart, byteRangeEnd), " ", 60)
+	fmt.Fprintf(linesBuffer, "%s| ASCII:\n", leftHeader)
 
 	for i := byteRangeStart; i < intmin(byteRangeEnd, len(expected)); i += byteCountPerLine {
 		end := intmin(i+byteCountPerLine, len(expected))
-		tabWriter.Write([]byte(fmt.Sprintf("%v\t %v\n", formatBytesAsHex(expected[i:end]), formatBytesAsAscii(expected[i:end]))))
+
+		bytesAsHex := formatHexWithColorizedByte(expected, i, firstDiffIndex, end, color.FgHiGreen)
+		bytesAsAscii := formatAsciiWithColorizedByte(expected, i, firstDiffIndex, end, color.FgHiGreen)
+
+		fmt.Fprintf(linesBuffer, "%v| %v\n", bytesAsHex, bytesAsAscii)
 	}
 
-	tabWriter.Write([]byte("\n"))
-	tabWriter.Write([]byte(fmt.Sprintf("Actual (bytes %v-%v), hexadecimal:         \t ASCII:\n", byteRangeStart, byteRangeEnd)))
+	linesBuffer.Write([]byte("\n"))
+
+	leftHeader = PadRight(fmt.Sprintf("Actual (bytes %v-%v), hexadecimal:", byteRangeStart, byteRangeEnd), " ", 60)
+	fmt.Fprintf(linesBuffer, "%s| ASCII:\n", leftHeader)
 
 	for i := byteRangeStart; i < intmin(byteRangeEnd, len(actual)); i += byteCountPerLine {
 		end := intmin(i+byteCountPerLine, len(actual))
-		tabWriter.Write([]byte(fmt.Sprintf("%v\t %v\n", formatBytesAsHex(actual[i:end]), formatBytesAsAscii(actual[i:end]))))
+
+		bytesAsHex := formatHexWithColorizedByte(actual, i, firstDiffIndex, end, color.FgHiRed)
+		bytesAsAscii := formatAsciiWithColorizedByte(actual, i, firstDiffIndex, end, color.FgHiRed)
+
+		fmt.Fprintf(linesBuffer, "%v| %v\n", bytesAsHex, bytesAsAscii)
 	}
 
-	tabWriter.Flush()
-
-	output := string(linesBuffer.Bytes())
+	output := linesBuffer.String()
 	if output[len(output)-1] == '\n' {
 		output = output[:len(output)-1]
 	}
@@ -80,6 +89,30 @@ func formatBytesAsAscii(value []byte) string {
 	}
 
 	return strings.Join(asciiRepresentations, "")
+}
+
+func formatHexWithColorizedByte(value []byte, i int, firstDiffIndex int, end int, chosenColor color.Attribute) string {
+	if firstDiffIndex >= i && firstDiffIndex < end {
+		return PadRight(formatHexWithColorizedByteHelper(value, i, firstDiffIndex, end, chosenColor), " ", 69)
+	} else {
+		return PadRight(formatBytesAsHex(value[i:end]), " ", 60)
+	}
+}
+
+func formatHexWithColorizedByteHelper(value []byte, i int, firstDiffIndex int, end int, chosenColor color.Attribute) string {
+	return formatBytesAsHex(value[i:firstDiffIndex]) + " " + colorizeString(chosenColor, formatBytesAsHex(value[firstDiffIndex:firstDiffIndex+1])) + " " + formatBytesAsHex(value[firstDiffIndex+1:end])
+}
+
+func formatAsciiWithColorizedByte(value []byte, i int, firstDiffIndex int, end int, chosenColor color.Attribute) string {
+	if firstDiffIndex >= i && firstDiffIndex < end {
+		return formatAsciiWithColorizedByteHelper(value, i, firstDiffIndex, end, chosenColor)
+	} else {
+		return formatBytesAsAscii(value[i:end])
+	}
+}
+
+func formatAsciiWithColorizedByteHelper(value []byte, i int, firstDiffIndex int, end int, chosenColor color.Attribute) string {
+	return formatBytesAsAscii(value[i:firstDiffIndex]) + colorizeString(chosenColor, formatBytesAsAscii(value[firstDiffIndex:firstDiffIndex+1])) + formatBytesAsAscii(value[firstDiffIndex+1:end])
 }
 
 func formatBytesAsHex(value []byte) string {
@@ -104,4 +137,26 @@ func intmin(a int, b int) int {
 		return a
 	}
 	return b
+}
+
+func colorizeString(colorToUse color.Attribute, msg string) string {
+	c := color.New(colorToUse)
+	return c.Sprint(msg)
+}
+
+func PadRight(str, pad string, length int) string {
+	for {
+		str += pad
+		if len(str) > length {
+			return str[0:length]
+		}
+	}
+}
+func PadLeft(str, pad string, length int) string {
+	for {
+		str = pad + str
+		if len(str) > length {
+			return str[0:length]
+		}
+	}
 }
