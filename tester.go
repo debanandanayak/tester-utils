@@ -2,8 +2,6 @@ package tester_utils
 
 import (
 	"fmt"
-	"os"
-	"path"
 
 	"github.com/codecrafters-io/tester-utils/executable"
 	"github.com/codecrafters-io/tester-utils/logger"
@@ -20,20 +18,7 @@ type Tester struct {
 
 // newTester creates a Tester based on the TesterDefinition provided
 func newTester(env map[string]string, definition tester_definition.TesterDefinition) (Tester, error) {
-	submissionDir, ok := env["CODECRAFTERS_SUBMISSION_DIR"]
-	if !ok {
-		return Tester{}, fmt.Errorf("CODECRAFTERS_SUBMISSION_DIR env var not found")
-	}
-
-	// check for your_program.sh
-	_, err := os.Stat(path.Join(submissionDir, definition.ExecutableFileName))
-	var context tester_context.TesterContext
-	if os.IsExist(err) {
-		context, err = tester_context.GetTesterContext(env, definition.ExecutableFileName)
-	} else {
-		context, err = tester_context.GetTesterContext(env, definition.LegacyExecutableFileName)
-	}
-
+	context, err := tester_context.GetTesterContext(env, definition)
 	if err != nil {
 		fmt.Printf("CodeCrafters internal error. Error fetching tester context: %v", err)
 		return Tester{}, fmt.Errorf("CodeCrafters internal error. Error fetching tester context: %v", err)
