@@ -2,10 +2,13 @@ package tester_context
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path"
 
+	"github.com/codecrafters-io/tester-utils/tester_definition"
 	"gopkg.in/yaml.v2"
 )
 
@@ -38,7 +41,7 @@ func (c TesterContext) Print() {
 }
 
 // GetContext parses flags and returns a Context object
-func GetTesterContext(env map[string]string, executableFileName string) (TesterContext, error) {
+func GetTesterContext(env map[string]string, definition tester_definition.TesterDefinition) (TesterContext, error) {
 	submissionDir, ok := env["CODECRAFTERS_SUBMISSION_DIR"]
 	if !ok {
 		return TesterContext{}, fmt.Errorf("CODECRAFTERS_SUBMISSION_DIR env var not found")
@@ -75,8 +78,20 @@ func GetTesterContext(env map[string]string, executableFileName string) (TesterC
 		}
 	}
 
+	newExecutablePath := path.Join(submissionDir, definition.ExecutableFileName)
+	legacyExecutablePath := path.Join(submissionDir, definition.LegacyExecutableFileName)
+
+	executablePath := newExecutablePath
+
+	_, newExecutablePathErr := os.Stat(newExecutablePath)
+	_, legacyExecutablePathErr := os.Stat(legacyExecutablePath)
+
+	// Only use legacyExecutablePath if the legacy file is present AND new file isn't
+	if legacyExecutablePathErr == nil && errors.Is(newExecutablePathErr, os.ErrNotExist) {
+		executablePath = legacyExecutablePath
+	}
+
 	configPath := path.Join(submissionDir, "codecrafters.yml")
-	executablePath := path.Join(submissionDir, executableFileName)
 
 	yamlConfig, err := readFromYAML(configPath)
 	if err != nil {

@@ -18,7 +18,7 @@ type Tester struct {
 
 // newTester creates a Tester based on the TesterDefinition provided
 func newTester(env map[string]string, definition tester_definition.TesterDefinition) (Tester, error) {
-	context, err := tester_context.GetTesterContext(env, definition.ExecutableFileName)
+	context, err := tester_context.GetTesterContext(env, definition)
 	if err != nil {
 		fmt.Printf("CodeCrafters internal error. Error fetching tester context: %v", err)
 		return Tester{}, fmt.Errorf("CodeCrafters internal error. Error fetching tester context: %v", err)

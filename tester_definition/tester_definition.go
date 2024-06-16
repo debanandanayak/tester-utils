@@ -32,7 +32,8 @@ func (t TestCase) CustomOrDefaultTimeout() time.Duration {
 
 type TesterDefinition struct {
 	// Example: spawn_redis_server.sh
-	ExecutableFileName string
+	ExecutableFileName       string
+	LegacyExecutableFileName string
 
 	TestCases          []TestCase
 	AntiCheatTestCases []TestCase
