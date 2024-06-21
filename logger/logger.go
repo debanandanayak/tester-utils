@@ -53,8 +53,11 @@ type Logger struct {
 	// IsQuiet is used to determine whether to emit non-critical logs.
 	IsQuiet bool
 
-	// Prefix is the prefix to be used for all logs.
-	Prefix string
+	// prefix is the prefix to be used for all logs.
+	prefix string
+
+	// SecondaryPrefix is a secondary prefix, that can be dynamically appended to the prefix.
+	SecondaryPrefix string
 
 	logger log.Logger
 }
@@ -67,20 +70,18 @@ func GetLogger(isDebug bool, prefix string) *Logger {
 	return &Logger{
 		logger:  *log.New(os.Stdout, coloredPrefix, 0),
 		IsDebug: isDebug,
-		Prefix:  prefix,
+		prefix:  prefix,
 	}
 }
 
-// GetLoggerWithAppendedPrefix Returns a logger after appending a prefix to the existing prefix.
-func (l *Logger) GetLoggerWithAppendedPrefix(prefix string) *Logger {
-	color.NoColor = false
-
-	coloredPrefix := yellowColorize(l.Prefix + fmt.Sprintf("[%s] ", prefix))[0]
-	return &Logger{
-		logger:  *log.New(os.Stdout, coloredPrefix, 0),
-		IsDebug: l.IsDebug,
-		Prefix:  prefix,
+func (l *Logger) UpdateSecondaryPrefix(prefix string) error {
+	l.SecondaryPrefix = prefix
+	if prefix == "" {
+		l.logger.SetPrefix(yellowColorize(l.prefix)[0])
+	} else {
+		l.logger.SetPrefix(yellowColorize(l.prefix + fmt.Sprintf("[%s] ", prefix))[0])
 	}
+	return nil
 }
 
 // GetQuietLogger Returns a logger that only emits critical logs. Useful for anti-cheat stages.
@@ -92,7 +93,7 @@ func GetQuietLogger(prefix string) *Logger {
 		logger:  *log.New(os.Stdout, coloredPrefix, 0),
 		IsDebug: false,
 		IsQuiet: true,
-		Prefix:  prefix,
+		prefix:  prefix,
 	}
 }
 
