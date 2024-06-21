@@ -53,6 +53,9 @@ type Logger struct {
 	// IsQuiet is used to determine whether to emit non-critical logs.
 	IsQuiet bool
 
+	// Prefix is the prefix to be used for all logs.
+	Prefix string
+
 	logger log.Logger
 }
 
@@ -60,10 +63,23 @@ type Logger struct {
 func GetLogger(isDebug bool, prefix string) *Logger {
 	color.NoColor = false
 
-	prefix = yellowColorize(prefix)[0]
+	coloredPrefix := yellowColorize(prefix)[0]
 	return &Logger{
-		logger:  *log.New(os.Stdout, prefix, 0),
+		logger:  *log.New(os.Stdout, coloredPrefix, 0),
 		IsDebug: isDebug,
+		Prefix:  prefix,
+	}
+}
+
+// GetLoggerWithAppendedPrefix Returns a logger after appending a prefix to the existing prefix.
+func (l *Logger) GetLoggerWithAppendedPrefix(prefix string) *Logger {
+	color.NoColor = false
+
+	coloredPrefix := yellowColorize(l.Prefix + fmt.Sprintf("[%s] ", prefix))[0]
+	return &Logger{
+		logger:  *log.New(os.Stdout, coloredPrefix, 0),
+		IsDebug: l.IsDebug,
+		Prefix:  prefix,
 	}
 }
 
@@ -71,11 +87,12 @@ func GetLogger(isDebug bool, prefix string) *Logger {
 func GetQuietLogger(prefix string) *Logger {
 	color.NoColor = false
 
-	prefix = yellowColorize(prefix)[0]
+	coloredPrefix := yellowColorize(prefix)[0]
 	return &Logger{
-		logger:  *log.New(os.Stdout, prefix, 0),
+		logger:  *log.New(os.Stdout, coloredPrefix, 0),
 		IsDebug: false,
 		IsQuiet: true,
+		Prefix:  prefix,
 	}
 }
 
