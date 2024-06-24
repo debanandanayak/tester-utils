@@ -56,8 +56,8 @@ type Logger struct {
 	// prefix is the prefix to be used for all logs.
 	prefix string
 
-	// SecondaryPrefix is a secondary prefix, that can be dynamically appended to the prefix.
-	SecondaryPrefix string
+	// secondaryPrefix is a secondary prefix, that can be dynamically appended to the prefix.
+	secondaryPrefix string
 
 	logger log.Logger
 }
@@ -75,11 +75,20 @@ func GetLogger(isDebug bool, prefix string) *Logger {
 }
 
 func (l *Logger) UpdateSecondaryPrefix(prefix string) error {
-	l.SecondaryPrefix = prefix
+	l.secondaryPrefix = prefix
 	if prefix == "" {
+		// Reset the prefix to the original one.
 		l.logger.SetPrefix(yellowColorize(l.prefix)[0])
 	} else {
+		// Append the secondary prefix to the original one.
 		l.logger.SetPrefix(yellowColorize(l.prefix + fmt.Sprintf("[%s] ", prefix))[0])
+	}
+	return nil
+}
+
+func (l *Logger) ResetSecondaryPrefix() error {
+	if err := l.UpdateSecondaryPrefix(""); err != nil {
+		return err
 	}
 	return nil
 }
