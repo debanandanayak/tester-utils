@@ -74,7 +74,7 @@ func GetLogger(isDebug bool, prefix string) *Logger {
 	}
 }
 
-func (l *Logger) UpdateSecondaryPrefix(prefix string) error {
+func (l *Logger) UpdateSecondaryPrefix(prefix string) {
 	l.secondaryPrefix = prefix
 	if prefix == "" {
 		// Reset the prefix to the original one.
@@ -83,14 +83,10 @@ func (l *Logger) UpdateSecondaryPrefix(prefix string) error {
 		// Append the secondary prefix to the original one.
 		l.logger.SetPrefix(yellowColorize(l.prefix + fmt.Sprintf("[%s] ", prefix))[0])
 	}
-	return nil
 }
 
-func (l *Logger) ResetSecondaryPrefix() error {
-	if err := l.UpdateSecondaryPrefix(""); err != nil {
-		return err
-	}
-	return nil
+func (l *Logger) ResetSecondaryPrefix() {
+	l.UpdateSecondaryPrefix("")
 }
 
 // GetQuietLogger Returns a logger that only emits critical logs. Useful for anti-cheat stages.
