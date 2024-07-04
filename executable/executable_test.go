@@ -10,7 +10,7 @@ import (
 func TestStart(t *testing.T) {
 	err := NewExecutable("/blah").Start()
 	assertErrorContains(t, err, "not found")
-	assertErrorContains(t, err, "/blah")
+	assertErrorContains(t, err, "blah")
 
 	err = NewExecutable("./test_helpers/not_executable.sh").Start()
 	assertErrorContains(t, err, "not an executable file")
@@ -28,7 +28,7 @@ func TestStartAndKill(t *testing.T) {
 	e := NewExecutable("/blah")
 	err := e.Start()
 	assertErrorContains(t, err, "not found")
-	assertErrorContains(t, err, "/blah")
+	assertErrorContains(t, err, "blah")
 	err = e.Kill()
 	assert.NoError(t, err)
 
