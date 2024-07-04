@@ -75,14 +75,20 @@ func GetLogger(isDebug bool, prefix string) *Logger {
 }
 
 func (l *Logger) UpdateSecondaryPrefix(prefix string) {
+	// Pass in the actual prefix that will be used.
+	// Else, if we want to use a series of [prefix1][prefix2] that fails
 	l.secondaryPrefix = prefix
 	if prefix == "" {
 		// Reset the prefix to the original one.
 		l.logger.SetPrefix(yellowColorize(l.prefix)[0])
 	} else {
 		// Append the secondary prefix to the original one.
-		l.logger.SetPrefix(yellowColorize(l.prefix + fmt.Sprintf("[%s] ", prefix))[0])
+		l.logger.SetPrefix(yellowColorize(l.prefix + prefix)[0])
 	}
+}
+
+func (l *Logger) GetSecondaryPrefix() string {
+	return l.secondaryPrefix
 }
 
 func (l *Logger) ResetSecondaryPrefix() {
