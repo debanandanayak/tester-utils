@@ -111,12 +111,12 @@ func (e *Executable) Start(args ...string) error {
 	} else {
 		absolutePath, err = filepath.Abs(e.Path)
 		if err != nil {
-			return fmt.Errorf("%s not found", e.Path)
+			return fmt.Errorf("%s not found", filepath.Base(e.Path))
 		}
 	}
 	fileInfo, err := os.Stat(absolutePath)
 	if err != nil {
-		return fmt.Errorf("%s not found", e.Path)
+		return fmt.Errorf("%s not found", filepath.Base(e.Path))
 	}
 
 	// Check executable permission
