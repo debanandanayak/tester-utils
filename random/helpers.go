@@ -68,6 +68,30 @@ func RandomStrings(n int) []string {
 	return l
 }
 
+func RandomElementFromArray(arr []string) string {
+	return RandomElementsFromArray(arr, 1)[0]
+}
+
+func RandomElementsFromArray[T any](arr []T, count int) []T {
+	// Randomly selects `count` unique elements from the given array
+	// and returns them in a new array.
+	var seen []int
+	for count > len(arr) {
+		// If we need more elements than the array has, we'll just append the array to itself repeatedly.
+		arr = append(arr, arr...)
+	}
+	elements := make([]T, count)
+	for i := 0; i < count; i++ {
+		index := rand.Intn(len(arr))
+		for contains(seen, index) {
+			index = rand.Intn(len(arr))
+		}
+		elements[i] = arr[index]
+		seen = append(seen, index)
+	}
+	return elements
+}
+
 func shuffle(vals []string, n int) []string {
 	if n > len(vals) {
 		panic("don't have so many words")
@@ -80,4 +104,13 @@ func shuffle(vals []string, n int) []string {
 	}
 
 	return ret
+}
+
+func contains(arr []int, val int) bool {
+	for _, v := range arr {
+		if v == val {
+			return true
+		}
+	}
+	return false
 }
