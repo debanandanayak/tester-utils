@@ -80,17 +80,9 @@ func RandomElementsFromArray[T any](arr []T, count int) []T {
 		arr = append(arr, arr...)
 	}
 	elements := make([]T, count)
-	for i, randIndex := range rand.Perm(len(elements)) {
-		elements[i] = elements[randIndex]
+	for i, randIndex := range rand.Perm(len(arr))[:count] {
+		elements[i] = arr[randIndex]
 	}
-	return elements
-}
 
-func contains(arr []int, val int) bool {
-	for _, v := range arr {
-		if v == val {
-			return true
-		}
-	}
-	return false
+	return elements
 }
