@@ -68,7 +68,7 @@ func RandomStrings(n int) []string {
 	return l
 }
 
-func RandomElementFromArray(arr []string) string {
+func RandomElementFromArray[T any](arr []T) T {
 	return RandomElementsFromArray(arr, 1)[0]
 }
 
