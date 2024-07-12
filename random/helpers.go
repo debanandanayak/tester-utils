@@ -49,7 +49,7 @@ func RandomWord() string {
 
 // RandomWords returns a random list of n words.
 func RandomWords(n int) []string {
-	return shuffle(randomWords, n)
+	return RandomElementsFromArray(randomWords, n)
 }
 
 // RandomString returns a random string of 6 words.
@@ -84,20 +84,6 @@ func RandomElementsFromArray[T any](arr []T, count int) []T {
 		elements[i] = elements[randIndex]
 	}
 	return elements
-}
-
-func shuffle(vals []string, n int) []string {
-	if n > len(vals) {
-		panic("don't have so many words")
-	}
-
-	ret := make([]string, n)
-
-	for i, randIndex := range rand.Perm(len(vals))[:n] {
-		ret[i] = vals[randIndex]
-	}
-
-	return ret
 }
 
 func contains(arr []int, val int) bool {
