@@ -75,19 +75,13 @@ func RandomElementFromArray[T any](arr []T) T {
 func RandomElementsFromArray[T any](arr []T, count int) []T {
 	// Randomly selects `count` unique elements from the given array
 	// and returns them in a new array.
-	var seen []int
 	for count > len(arr) {
 		// If we need more elements than the array has, we'll just append the array to itself repeatedly.
 		arr = append(arr, arr...)
 	}
 	elements := make([]T, count)
-	for i := 0; i < count; i++ {
-		index := rand.Intn(len(arr))
-		for contains(seen, index) {
-			index = rand.Intn(len(arr))
-		}
-		elements[i] = arr[index]
-		seen = append(seen, index)
+	for i, randIndex := range rand.Perm(len(elements)) {
+		elements[i] = elements[randIndex]
 	}
 	return elements
 }
