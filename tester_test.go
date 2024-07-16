@@ -42,7 +42,7 @@ func TestAllStagesPass(t *testing.T) {
 		},
 	}
 	env := map[string]string{
-		"CODECRAFTERS_SUBMISSION_DIR":  "./test_helpers/valid_app_dir",
+		"CODECRAFTERS_REPOSITORY_DIR":  "./test_helpers/valid_app_dir",
 		"CODECRAFTERS_TEST_CASES_JSON": buildTestCasesJson([]string{"test-1", "test-2"}),
 	}
 	exitCode := RunCLI(env, definition)
@@ -58,7 +58,7 @@ func TestOneStageFails(t *testing.T) {
 	}
 
 	env := map[string]string{
-		"CODECRAFTERS_SUBMISSION_DIR":  "./test_helpers/valid_app_dir",
+		"CODECRAFTERS_REPOSITORY_DIR":  "./test_helpers/valid_app_dir",
 		"CODECRAFTERS_TEST_CASES_JSON": buildTestCasesJson([]string{"test-1", "test-2"}),
 	}
 	exitCode := RunCLI(env, definition)

@@ -129,7 +129,7 @@ func runCLIStage(testerDefinition tester_definition.TesterDefinition, testCasesJ
 
 	return tester_utils.RunCLI(map[string]string{
 		"CODECRAFTERS_TEST_CASES_JSON": testCasesJson,
-		"CODECRAFTERS_SUBMISSION_DIR":  path,
+		"CODECRAFTERS_REPOSITORY_DIR":  path,
 		"CODECRAFTERS_SKIP_ANTI_CHEAT": strconv.FormatBool(skipAntiCheat),
 	}, testerDefinition)
 }

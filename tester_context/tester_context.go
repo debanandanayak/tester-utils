@@ -42,9 +42,9 @@ func (c TesterContext) Print() {
 
 // GetContext parses flags and returns a Context object
 func GetTesterContext(env map[string]string, definition tester_definition.TesterDefinition) (TesterContext, error) {
-	submissionDir, ok := env["CODECRAFTERS_SUBMISSION_DIR"]
+	submissionDir, ok := env["CODECRAFTERS_REPOSITORY_DIR"]
 	if !ok {
-		return TesterContext{}, fmt.Errorf("CODECRAFTERS_SUBMISSION_DIR env var not found")
+		return TesterContext{}, fmt.Errorf("CODECRAFTERS_REPOSITORY_DIR env var not found")
 	}
 
 	testCasesJson, ok := env["CODECRAFTERS_TEST_CASES_JSON"]

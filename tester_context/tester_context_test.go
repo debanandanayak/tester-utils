@@ -19,7 +19,7 @@ func TestRequiresAppDir(t *testing.T) {
 
 func TestRequiresCurrentStageSlug(t *testing.T) {
 	_, err := GetTesterContext(map[string]string{
-		"CODECRAFTERS_SUBMISSION_DIR": "./test_helpers/valid_app_dir",
+		"CODECRAFTERS_REPOSITORY_DIR": "./test_helpers/valid_app_dir",
 	}, tester_definition.TesterDefinition{})
 	if !assert.Error(t, err) {
 		t.FailNow()
@@ -29,7 +29,7 @@ func TestRequiresCurrentStageSlug(t *testing.T) {
 func TestSuccessParsingTestCases(t *testing.T) {
 	context, err := GetTesterContext(map[string]string{
 		"CODECRAFTERS_TEST_CASES_JSON": `[{ "slug": "test", "tester_log_prefix": "test", "title": "Test"}]`,
-		"CODECRAFTERS_SUBMISSION_DIR":  "./test_helpers/valid_app_dir",
+		"CODECRAFTERS_REPOSITORY_DIR":  "./test_helpers/valid_app_dir",
 	}, tester_definition.TesterDefinition{})
 	if !assert.NoError(t, err) {
 		t.FailNow()
@@ -54,7 +54,7 @@ func TestCorrectExecutable(t *testing.T) {
 	for _, tt := range tests {
 		context, err := GetTesterContext(map[string]string{
 			"CODECRAFTERS_TEST_CASES_JSON": `[{ "slug": "test", "tester_log_prefix": "test", "title": "Test"}]`,
-			"CODECRAFTERS_SUBMISSION_DIR":  fmt.Sprintf("./test_helpers/%s", tt.submissionDir),
+			"CODECRAFTERS_REPOSITORY_DIR":  fmt.Sprintf("./test_helpers/%s", tt.submissionDir),
 		}, tester_definition.TesterDefinition{
 			ExecutableFileName:       "your_program.sh",
 			LegacyExecutableFileName: "spawn_redis_server.sh",
