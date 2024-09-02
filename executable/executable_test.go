@@ -176,16 +176,14 @@ func TestRunWithStdin(t *testing.T) {
 
 func TestRunWithStdinTimeout(t *testing.T) {
 	e := NewExecutable("sleep")
-	e.TimeoutInSecs = 2
+	e.TimeoutInMilliseconds = 50
 
 	result, err := e.RunWithStdin([]byte(""), "10")
-	assert.NoError(t, err)
-	assert.Equal(t, result.Timeout, true)
-	assert.Equal(t, result.ExitCode, -1)
+	assert.Error(t, err)
+	assert.Equal(t, err.Error(), "execution timed out")
 
-	result, err = e.RunWithStdin([]byte(""), "1")
+	result, err = e.RunWithStdin([]byte(""), "0.02")
 	assert.NoError(t, err)
-	assert.Equal(t, result.Timeout, false)
 	assert.Equal(t, result.ExitCode, 0)
 }
 
