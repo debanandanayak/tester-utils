@@ -46,7 +46,7 @@ func (r TestRunner) Run(isDebug bool, executable *executable.Executable) bool {
 
 		testCaseHarness := test_case_harness.TestCaseHarness{
 			Logger:     r.getLoggerForStep(isDebug, step),
-			Executable: executable,
+			Executable: executable.Clone(),
 		}
 
 		logger := testCaseHarness.Logger
