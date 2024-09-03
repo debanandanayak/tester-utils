@@ -2,6 +2,7 @@ package executable
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -17,9 +18,12 @@ import (
 
 // Executable represents a program that can be executed
 type Executable struct {
-	Path          string
-	timeoutInSecs int
-	loggerFunc    func(string)
+	Path                  string
+	TimeoutInMilliseconds int
+	loggerFunc            func(string)
+
+	ctxWithTimeout context.Context
+	ctxCancelFunc  context.CancelFunc
 
 	// WorkingDir can be set before calling Start or Run to customize the working directory of the executable.
 	WorkingDir string
@@ -68,21 +72,21 @@ func nullLogger(msg string) {
 
 func (e *Executable) Clone() *Executable {
 	return &Executable{
-		Path:          e.Path,
-		timeoutInSecs: e.timeoutInSecs,
-		loggerFunc:    e.loggerFunc,
-		WorkingDir:    e.WorkingDir,
+		Path:                  e.Path,
+		TimeoutInMilliseconds: e.TimeoutInMilliseconds,
+		loggerFunc:            e.loggerFunc,
+		WorkingDir:            e.WorkingDir,
 	}
 }
 
 // NewExecutable returns an Executable
 func NewExecutable(path string) *Executable {
-	return &Executable{Path: path, timeoutInSecs: 10, loggerFunc: nullLogger}
+	return &Executable{Path: path, TimeoutInMilliseconds: 10 * 1000, loggerFunc: nullLogger}
 }
 
 // NewVerboseExecutable returns an Executable struct with a logger configured
 func NewVerboseExecutable(path string, loggerFunc func(string)) *Executable {
-	return &Executable{Path: path, timeoutInSecs: 10, loggerFunc: loggerFunc}
+	return &Executable{Path: path, TimeoutInMilliseconds: 10 * 1000, loggerFunc: loggerFunc}
 }
 
 func (e *Executable) isRunning() bool {
@@ -90,7 +94,7 @@ func (e *Executable) isRunning() bool {
 }
 
 func (e *Executable) HasExited() bool {
-	return e.atleastOneReadDone == true
+	return e.atleastOneReadDone
 }
 
 // Start starts the specified command but does not wait for it to complete.
@@ -124,8 +128,11 @@ func (e *Executable) Start(args ...string) error {
 		return fmt.Errorf("%s is not an executable file", e.Path)
 	}
 
-	// TODO: Use timeout!
-	cmd := exec.Command(e.Path, args...)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(e.TimeoutInMilliseconds)*time.Millisecond)
+	e.ctxWithTimeout = ctx
+	e.ctxCancelFunc = cancel
+
+	cmd := exec.CommandContext(ctx, e.Path, args...)
 	cmd.Dir = e.WorkingDir
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	e.readDone = make(chan bool)
@@ -213,8 +220,11 @@ func (e *Executable) RunWithStdin(stdin []byte, args ...string) (ExecutableResul
 // Wait waits for the program to finish and results the result
 func (e *Executable) Wait() (ExecutableResult, error) {
 	defer func() {
+		e.ctxCancelFunc()
 		e.atleastOneReadDone = false
 		e.cmd = nil
+		e.ctxCancelFunc = nil
+		e.ctxWithTimeout = nil
 		e.stdoutPipe = nil
 		e.stderrPipe = nil
 		e.stdoutBuffer = nil
@@ -247,11 +257,16 @@ func (e *Executable) Wait() (ExecutableResult, error) {
 	stdout := e.stdoutBuffer.Bytes()
 	stderr := e.stderrBuffer.Bytes()
 
-	return ExecutableResult{
+	result := ExecutableResult{
 		Stdout:   stdout,
 		Stderr:   stderr,
 		ExitCode: e.cmd.ProcessState.ExitCode(),
-	}, nil
+	}
+
+	if e.ctxWithTimeout.Err() == context.DeadlineExceeded {
+		return ExecutableResult{}, fmt.Errorf("execution timed out")
+	}
+	return result, nil
 }
 
 // Kill terminates the program

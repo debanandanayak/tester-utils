@@ -174,6 +174,19 @@ func TestRunWithStdin(t *testing.T) {
 	assert.Equal(t, result.ExitCode, 1)
 }
 
+func TestRunWithStdinTimeout(t *testing.T) {
+	e := NewExecutable("sleep")
+	e.TimeoutInMilliseconds = 50
+
+	result, err := e.RunWithStdin([]byte(""), "10")
+	assert.Error(t, err)
+	assert.Equal(t, err.Error(), "execution timed out")
+
+	result, err = e.RunWithStdin([]byte(""), "0.02")
+	assert.NoError(t, err)
+	assert.Equal(t, result.ExitCode, 0)
+}
+
 // Rogue == doesn't respond to SIGTERM
 func TestTerminatesRoguePrograms(t *testing.T) {
 	e := NewExecutable("bash")
