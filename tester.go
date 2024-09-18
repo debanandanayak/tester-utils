@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/codecrafters-io/tester-utils/executable"
+	"github.com/codecrafters-io/tester-utils/internal"
 	"github.com/codecrafters-io/tester-utils/logger"
 	"github.com/codecrafters-io/tester-utils/random"
 	"github.com/codecrafters-io/tester-utils/test_runner"
@@ -20,6 +21,11 @@ type Tester struct {
 func newTester(env map[string]string, definition tester_definition.TesterDefinition) (Tester, error) {
 	context, err := tester_context.GetTesterContext(env, definition)
 	if err != nil {
+		if friendlyErr, ok := err.(*internal.FriendlyError); ok {
+			fmt.Printf(friendlyErr.UserError)
+			return Tester{}, fmt.Errorf(friendlyErr.UserError)
+		}
+
 		fmt.Printf("CodeCrafters internal error. Error fetching tester context: %v", err)
 		return Tester{}, fmt.Errorf("CodeCrafters internal error. Error fetching tester context: %v", err)
 	}
