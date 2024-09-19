@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 
+	"github.com/codecrafters-io/tester-utils/internal"
 	"github.com/codecrafters-io/tester-utils/tester_definition"
 	"gopkg.in/yaml.v2"
 )
@@ -115,13 +115,17 @@ func GetTesterContext(env map[string]string, definition tester_definition.Tester
 func readFromYAML(configPath string) (yamlConfig, error) {
 	c := &yamlConfig{}
 
-	fileContents, err := ioutil.ReadFile(configPath)
+	fileContents, err := os.ReadFile(configPath)
 	if err != nil {
-		return yamlConfig{}, err
+		return yamlConfig{}, &internal.UserError{
+			Message: "Can't read codecrafters.yml file in your repository. This is required to run tests.",
+		}
 	}
 
 	if err := yaml.Unmarshal(fileContents, c); err != nil {
-		return yamlConfig{}, err
+		return yamlConfig{}, &internal.UserError{
+			Message: fmt.Sprintf("Error parsing codecrafters.yml: %s", err),
+		}
 	}
 
 	return *c, nil
