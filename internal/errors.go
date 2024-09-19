@@ -1,9 +1,9 @@
 package internal
 
-type FriendlyError struct {
-	UserError string
+type UserError struct {
+	Message string
 }
 
-func (e *FriendlyError) Error() string {
-	return e.UserError
+func (e *UserError) Error() string {
+	return e.Message
 }

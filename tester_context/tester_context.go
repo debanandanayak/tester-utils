@@ -117,14 +117,14 @@ func readFromYAML(configPath string) (yamlConfig, error) {
 
 	fileContents, err := os.ReadFile(configPath)
 	if err != nil {
-		return yamlConfig{}, &internal.FriendlyError{
-			UserError: "Can't read codecrafters.yml file in your repository. This is required to run tests.",
+		return yamlConfig{}, &internal.UserError{
+			Message: "Can't read codecrafters.yml file in your repository. This is required to run tests.",
 		}
 	}
 
 	if err := yaml.Unmarshal(fileContents, c); err != nil {
-		return yamlConfig{}, &internal.FriendlyError{
-			UserError: fmt.Sprintf("Error parsing codecrafters.yml: %s", err),
+		return yamlConfig{}, &internal.UserError{
+			Message: fmt.Sprintf("Error parsing codecrafters.yml: %s", err),
 		}
 	}
 

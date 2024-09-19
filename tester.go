@@ -21,12 +21,10 @@ type Tester struct {
 func newTester(env map[string]string, definition tester_definition.TesterDefinition) (Tester, error) {
 	context, err := tester_context.GetTesterContext(env, definition)
 	if err != nil {
-		if friendlyErr, ok := err.(*internal.FriendlyError); ok {
-			fmt.Printf(friendlyErr.UserError)
-			return Tester{}, fmt.Errorf(friendlyErr.UserError)
+		if userError, ok := err.(*internal.UserError); ok {
+			return Tester{}, fmt.Errorf(userError.Message)
 		}
 
-		fmt.Printf("CodeCrafters internal error. Error fetching tester context: %v", err)
 		return Tester{}, fmt.Errorf("CodeCrafters internal error. Error fetching tester context: %v", err)
 	}
 
@@ -48,7 +46,7 @@ func RunCLI(env map[string]string, definition tester_definition.TesterDefinition
 
 	tester, err := newTester(env, definition)
 	if err != nil {
-		fmt.Printf("%s", err)
+		fmt.Println(err.Error())
 		return 1
 	}
 
