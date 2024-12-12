@@ -43,7 +43,8 @@ func RandomInt(min, max int) int {
 	return rand.Intn(max-min) + min
 }
 
-// RandomInts returns a list of n unique random integers between [min, max)
+// RandomInts returns an array of `count` unique random integers between [min, max)
+// It panics if count is greater than the range of possible values.
 func RandomInts(min, max int, count int) []int {
 	randomInts := []int{}
 
