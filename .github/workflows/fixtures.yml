@@ -2,12 +2,31 @@ name: Trigger Fixture Regeneration
 
 on:
   workflow_call:  
+    inputs:
+      label:
+        description: "Label that triggers fixture regeneration"
+        required: true
+        type: string
 
 jobs:
   trigger_pipeline:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check if the required label was applied
+        id: check_label
+        run: |
+          if [[ "${{ github.event.pull_request.labels.*.name }}" ==  "${{ inputs.label }}" ]]; then
+            echo "::set-output name=label_matched::true"
+          else
+            echo "::set-output name=label_matched::false"
+            echo "::set-output name=skip_job::true"
+          fi
+
+       - name: Skip job if label does not match
+        if: steps.check_label.outputs.skip_job == 'true'
+        run: echo "Skipping job because label does not match" && exit 1
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
