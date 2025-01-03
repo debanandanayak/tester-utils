@@ -23,7 +23,7 @@ jobs:
             echo "::set-output name=skip_job::true"
           fi
 
-       - name: Skip job if label does not match
+      - name: Skip job if label does not match
         if: steps.check_label.outputs.skip_job == 'true'
         run: echo "Skipping job because label does not match" && exit 1
 
