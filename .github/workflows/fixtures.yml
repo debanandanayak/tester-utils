@@ -1,3 +1,9 @@
+# Reusable workflow to trigger fixture regeneration in tester repos.
+# The tester repo should have a defined repo secret with repo, workflow access # named `RYAN_FIXTURE_GEN_PAT`.
+# The repo also needs to define `make test` as a job in the Makefile.
+# The workflow will trigger on a `regenerate-fixtures` label on a PR.
+# While calling this workflow, the caller can pass all its secrets using:
+# secrets: inherit
 name: Trigger Fixture Regeneration
 
 on:
