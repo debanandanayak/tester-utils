@@ -51,7 +51,7 @@ jobs:
         run: |
           git config --global user.email "ryan-gg@outlook.com"
           git config --global user.name "Ryan Gang"
-          git remote set-url origin https://ryan-gang:${{ secrets.TESTER_FIXTURE_GENERATION_GITHUB_TOKEN }}@github.com/codecrafters-io/shell-tester.git
+          git remote set-url origin https://ryan-gang:${{ secrets.TESTER_FIXTURE_GENERATION_GITHUB_TOKEN }}@github.com/codecrafters-io/${{ inputs.tester_repo }}.git
           git fetch origin ${{ github.head_ref }}
           git checkout ${{ github.head_ref }}
           git diff --quiet || (git add . && git commit -m "ci: add regenerated fixtures" && git push)
