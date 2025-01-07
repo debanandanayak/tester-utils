@@ -42,7 +42,7 @@ jobs:
           
       - name: Set up prerequisites
         if: inputs.tester_repo == 'interpreter-tester'
-        uses: codecrafters-io/codecrafters-action@402e823b111453d1b288e429c52a9d4f9a9bf9ea
+        uses: codecrafters-io/codecrafters-action/.github/actions/interpreter-setup@0c837a535d025ea098d0d98b38345c5aefc2679d
 
       - name: Regenerate Fixtures
         run: CODECRAFTERS_RECORD_FIXTURES=true make test 
