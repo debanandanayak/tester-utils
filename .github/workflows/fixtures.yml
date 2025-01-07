@@ -45,10 +45,11 @@ jobs:
           echo "context: ${{ github.event }}"
           echo "inputs: ${{ github.event.inputs }}"
           echo "tester_repo: ${{ github.event.inputs.tester_repo }}"
-
+          echo "tester_repo: ${{ inputs.tester_repo }}"
+          echo "INPUT_TESTER_REPO: $INPUT_TESTER_REPO"
           
       - name: Set up prerequisites
-        if: github.event.inputs.tester_repo == 'interpreter-tester'
+        if: inputs.tester_repo == 'interpreter-tester'
         uses: codecrafters-io/codecrafters-action@402e823b111453d1b288e429c52a9d4f9a9bf9ea
 
       - name: Regenerate Fixtures
