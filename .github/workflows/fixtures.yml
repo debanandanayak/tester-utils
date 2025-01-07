@@ -41,7 +41,7 @@ jobs:
           labels: regenerate-fixtures
       
       - name: Set up prerequisites
-        if: ${{ github.event.inputs.tester_repo == 'interpreter-tester' }}
+        if: github.event.inputs.tester_repo == 'interpreter-tester'
         uses: codecrafters-io/codecrafters-action@402e823b111453d1b288e429c52a9d4f9a9bf9ea
 
       - name: Regenerate Fixtures
