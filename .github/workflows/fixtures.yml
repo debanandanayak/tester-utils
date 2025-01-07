@@ -42,7 +42,7 @@ jobs:
           
       - name: Set up prerequisites (interpreter)
         if: inputs.tester_repo == 'interpreter-tester'
-        uses: codecrafters-io/codecrafters-action/.github/actions/interpreter-setup@0c837a535d025ea098d0d98b38345c5aefc2679d
+        uses: codecrafters-io/codecrafters-action/.github/actions/interpreter-setup@b7d515cea86f1815ce74c6eeb0cb15fb458eda88
 
       - name: Set up prerequisites (redis)
         if: inputs.tester_repo == 'redis-tester'
