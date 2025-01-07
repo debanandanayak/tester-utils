@@ -8,6 +8,11 @@ name: Trigger Fixture Regeneration
 
 on:
   workflow_call:  
+    inputs:
+      tester_repo:
+        description: "The repo to regenerate fixtures for"
+        required: true
+        type: string
 
 jobs:
   trigger_pipeline:
