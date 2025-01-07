@@ -40,9 +40,13 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           labels: regenerate-fixtures
           
-      - name: Set up prerequisites
+      - name: Set up prerequisites (interpreter)
         if: inputs.tester_repo == 'interpreter-tester'
         uses: codecrafters-io/codecrafters-action/.github/actions/interpreter-setup@0c837a535d025ea098d0d98b38345c5aefc2679d
+
+      - name: Set up prerequisites (redis)
+        if: inputs.tester_repo == 'redis-tester'
+        uses: codecrafters-io/codecrafters-action/.github/actions/redis-setup@ef5aeb9504e08cccfe71e1dbcf806fab3738019d
 
       - name: Regenerate Fixtures
         run: CODECRAFTERS_RECORD_FIXTURES=true make test 
