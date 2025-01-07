@@ -39,6 +39,10 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           labels: regenerate-fixtures
+      
+      - name: Set up prerequisites
+        if: ${{ github.event.inputs.tester_repo == 'interpreter-tester' }}
+        uses: codecrafters-io/interpreter-tester/.github/workflows/test.yml@fixture-gen-action
 
       - name: Regenerate Fixtures
         run: CODECRAFTERS_RECORD_FIXTURES=true make test 
