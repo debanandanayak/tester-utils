@@ -74,6 +74,10 @@ func GetLogger(isDebug bool, prefix string) *Logger {
 	}
 }
 
+func (l *Logger) GetSecondaryPrefix() string {
+	return l.secondaryPrefix
+}
+
 func (l *Logger) UpdateSecondaryPrefix(prefix string) {
 	l.secondaryPrefix = prefix
 	if prefix == "" {
