@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/codecrafters-io/tester-utils/executable"
+	"github.com/debanandanayak/tester-utils/executable"
 )
 
 func CompareOutputWithFixture(t *testing.T, testerOutput []byte, normalizeOutputFunc func([]byte) []byte, fixturePath string) {

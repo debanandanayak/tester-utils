@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"testing"
 
-	tester_utils "github.com/codecrafters-io/tester-utils"
-	"github.com/codecrafters-io/tester-utils/stdio_mocker"
-	"github.com/codecrafters-io/tester-utils/tester_definition"
+	tester_utils "github.com/debanandanayak/tester-utils"
+	"github.com/debanandanayak/tester-utils/stdio_mocker"
+	"github.com/debanandanayak/tester-utils/tester_definition"
 	"github.com/stretchr/testify/assert"
 )
 

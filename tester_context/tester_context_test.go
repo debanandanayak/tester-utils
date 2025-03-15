@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/codecrafters-io/tester-utils/tester_definition"
+	"github.com/debanandanayak/tester-utils/tester_definition"
 	"github.com/stretchr/testify/assert"
 )
 

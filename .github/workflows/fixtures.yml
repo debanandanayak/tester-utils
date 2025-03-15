@@ -42,17 +42,17 @@ jobs:
           
       - name: Set up prerequisites (interpreter)
         if: inputs.tester_repo == 'interpreter-tester'
-        uses: codecrafters-io/codecrafters-action/.github/actions/interpreter-setup@b7d515cea86f1815ce74c6eeb0cb15fb458eda88
+        uses: debanandanayak/codecrafters-action/.github/actions/interpreter-setup@b7d515cea86f1815ce74c6eeb0cb15fb458eda88
 
       - name: Set up prerequisites (redis)
         if: inputs.tester_repo == 'redis-tester'
-        uses: codecrafters-io/codecrafters-action/.github/actions/redis-setup@ef5aeb9504e08cccfe71e1dbcf806fab3738019d
+        uses: debanandanayak/codecrafters-action/.github/actions/redis-setup@ef5aeb9504e08cccfe71e1dbcf806fab3738019d
 
       - name: Setup git config
         run: |
           git config --global user.email "ryan-gg@outlook.com"
           git config --global user.name "Ryan Gang"
-          git remote set-url origin https://ryan-gang:${{ secrets.TESTER_FIXTURE_GENERATION_GITHUB_TOKEN }}@github.com/codecrafters-io/${{ inputs.tester_repo }}.git
+          git remote set-url origin https://ryan-gang:${{ secrets.TESTER_FIXTURE_GENERATION_GITHUB_TOKEN }}@github.com/debanandanayak/${{ inputs.tester_repo }}.git
           git fetch origin ${{ github.head_ref }}
           git checkout ${{ github.head_ref }}
 

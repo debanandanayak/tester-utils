@@ -3,13 +3,13 @@ package tester_utils
 import (
 	"fmt"
 
-	"github.com/codecrafters-io/tester-utils/executable"
-	"github.com/codecrafters-io/tester-utils/internal"
-	"github.com/codecrafters-io/tester-utils/logger"
-	"github.com/codecrafters-io/tester-utils/random"
-	"github.com/codecrafters-io/tester-utils/test_runner"
-	"github.com/codecrafters-io/tester-utils/tester_context"
-	"github.com/codecrafters-io/tester-utils/tester_definition"
+	"github.com/debanandanayak/tester-utils/executable"
+	"github.com/debanandanayak/tester-utils/internal"
+	"github.com/debanandanayak/tester-utils/logger"
+	"github.com/debanandanayak/tester-utils/random"
+	"github.com/debanandanayak/tester-utils/test_runner"
+	"github.com/debanandanayak/tester-utils/tester_context"
+	"github.com/debanandanayak/tester-utils/tester_definition"
 )
 
 type Tester struct {

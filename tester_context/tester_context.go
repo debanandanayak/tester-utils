@@ -7,8 +7,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/codecrafters-io/tester-utils/internal"
-	"github.com/codecrafters-io/tester-utils/tester_definition"
+	"github.com/debanandanayak/tester-utils/internal"
+	"github.com/debanandanayak/tester-utils/tester_definition"
 	"gopkg.in/yaml.v2"
 )
 

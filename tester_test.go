@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/codecrafters-io/tester-utils/test_case_harness"
-	"github.com/codecrafters-io/tester-utils/tester_definition"
+	"github.com/debanandanayak/tester-utils/test_case_harness"
+	"github.com/debanandanayak/tester-utils/tester_definition"
 	"github.com/stretchr/testify/assert"
 )
 

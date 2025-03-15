@@ -8,10 +8,10 @@ description_md: |-
 
 supported_languages: ["python", "go", "php"]
 starter_repos:
-  python: https://github.com/codecrafters-io/redis-starter-py
-  swift: https://github.com/codecrafters-io/redis-starter-swift
-  go: https://github.com/codecrafters-io/redis-starter-golang
-  php: https://github.com/codecrafters-io/redis-starter-php
+  python: https://github.com/debanandanayak/redis-starter-py
+  swift: https://github.com/debanandanayak/redis-starter-swift
+  go: https://github.com/debanandanayak/redis-starter-golang
+  php: https://github.com/debanandanayak/redis-starter-php
 
 marketing_intro_md: |-
   This is the first CodeCrafters challenge. We're currently running [early

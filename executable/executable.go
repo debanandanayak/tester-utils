@@ -12,7 +12,7 @@ import (
 	"io"
 	"os/exec"
 
-	"github.com/codecrafters-io/tester-utils/linewriter"
+	"github.com/debanandanayak/tester-utils/linewriter"
 )
 
 // Executable represents a program that can be executed
