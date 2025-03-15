@@ -11,7 +11,6 @@ import (
 
 	"io"
 	"os/exec"
-	"syscall"
 
 	"github.com/codecrafters-io/tester-utils/linewriter"
 )
@@ -134,7 +133,7 @@ func (e *Executable) Start(args ...string) error {
 
 	cmd := exec.CommandContext(ctx, e.Path, args...)
 	cmd.Dir = e.WorkingDir
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	cmd.SysProcAttr = createProcAttribute()
 	e.readDone = make(chan bool)
 	e.atleastOneReadDone = false
 
@@ -278,8 +277,8 @@ func (e *Executable) Kill() error {
 	doneChannel := make(chan error, 1)
 
 	go func() {
-		syscall.Kill(e.cmd.Process.Pid, syscall.SIGTERM)  // Don't know if this is required
-		syscall.Kill(-e.cmd.Process.Pid, syscall.SIGTERM) // Kill the whole process group
+		killProcess(e.cmd.Process.Pid)
+		killProcess(-e.cmd.Process.Pid)
 		_, err := e.Wait()
 		doneChannel <- err
 	}()
@@ -292,8 +291,8 @@ func (e *Executable) Kill() error {
 		cmd := e.cmd
 		if cmd != nil {
 			err = fmt.Errorf("program failed to exit in 2 seconds after receiving sigterm")
-			syscall.Kill(cmd.Process.Pid, syscall.SIGKILL)  // Don't know if this is required
-			syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL) // Kill the whole process group
+			killProcess(cmd.Process.Pid)
+			killProcess(-cmd.Process.Pid)
 
 			<-doneChannel // Wait for Wait() to return
 		}
